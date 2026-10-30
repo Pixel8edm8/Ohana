@@ -10,8 +10,8 @@ const parser = new XMLParser({
 });
 
 const insertPerson = db.prepare(`
-  INSERT INTO people (user_id, first_name, last_name, birth_date, photo)
-  VALUES (?, ?, ?, ?, ?)
+  INSERT INTO people (user_id, first_name, last_name, birth_date, death_date, photo)
+  VALUES (?, ?, ?, ?, ?, ?)
 `);
 const linkPerson = db.prepare(`
   UPDATE people SET father_id = ?, mother_id = ?, spouse_id = ?
@@ -37,7 +37,8 @@ function importXml(xmlText, userId) {
       if (!p.firstName) throw new Error(`Person "${xmlId}" is missing <firstName>`);
 
       const result = insertPerson.run(
-        userId, p.firstName, p.lastName || null, p.birthDate || null, p.photo || null
+        userId, p.firstName, p.lastName || null, p.birthDate || null,
+        p.deathDate || null, p.photo || null
       );
       idMap.set(xmlId, result.lastInsertRowid);
     }
@@ -79,6 +80,7 @@ function exportXml(userId) {
         firstName: p.first_name,
         lastName: p.last_name ?? '',
         birthDate: p.birth_date ?? '',
+        deathDate: p.death_date ?? '',
         photo: p.photo ?? '',
         father: p.father_id ?? '',
         mother: p.mother_id ?? '',
