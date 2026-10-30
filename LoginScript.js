@@ -54,3 +54,25 @@ document.addEventListener("keydown", function (event) {
         closeLogin();
     }
 });
+const registrationForm = document.querySelector("form");
+
+registrationForm.addEventListener("submit", function (event) {
+    const emailCheck = document.getElementById("email").value;
+    if (!emailCheck.includes("@")) {
+        event.preventDefault();
+        alert("Please enter a valid email address.");
+        document.getElementById("email").focus();
+    }
+});
+
+registrationForm.addEventListener("submit", function (event) {
+    const password = document.getElementById("psw").value;
+    const repeatPassword = document.getElementById("psw-repeat").value;
+    if (password !== repeatPassword) {
+        event.preventDefault();
+        alert("Passwords do not match. Please try again.");
+        document.getElementById("psw-repeat").focus();
+    }
+});                         
+                         
+                         
