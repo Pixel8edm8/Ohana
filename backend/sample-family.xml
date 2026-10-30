@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<family>
+  <person id="1">
+    <firstName>Kalani</firstName>
+    <lastName>Nakamura</lastName>
+    <birthDate>1940-03-12</birthDate>
+    <deathDate>2010-05-15</deathDate>
+    <spouse>2</spouse>
+  </person>
+  <person id="2">
+    <firstName>Mele</firstName>
+    <lastName>Nakamura</lastName>
+    <birthDate>1942-08-01</birthDate>
+    <deathDate>2010-05-15</deathDate>
+    <spouse>1</spouse>
+  </person>
+  <person id="3">
+    <firstName>Keoni</firstName>
+    <lastName>Nakamura</lastName>
+    <birthDate>1965-07-20</birthDate>
+    <deathDate>2010-05-15</deathDate>
+    <father>1</father>
+    <mother>2</mother>
+  </person>
+</family>
