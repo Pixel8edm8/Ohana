@@ -11,12 +11,14 @@
     <firstName>Mele</firstName>
     <lastName>Nakamura</lastName>
     <birthDate>1942-08-01</birthDate>
+    <deathDate>2010-05-15</deathDate>
     <spouse>1</spouse>
   </person>
   <person id="3">
     <firstName>Keoni</firstName>
     <lastName>Nakamura</lastName>
     <birthDate>1965-07-20</birthDate>
+    <deathDate>2010-05-15</deathDate>
     <father>1</father>
     <mother>2</mother>
   </person>
