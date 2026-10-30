@@ -76,6 +76,9 @@ body {
     margin: auto;
     padding: 70px 0 55px;
 }
+.details .hero h1{
+    font-size: 42px;
+}
 
 .hero {
     text-align: center;
@@ -368,6 +371,30 @@ footer {
     color: var(--muted);
     font-size: 10px;
     line-height: 1.8;
+}
+
+/* Registration form display layout */
+
+.details form .container label {
+    display: block;
+    margin-top: 15px;
+    margin-bottom: 6px;
+}
+
+.details form .container input {
+    display: block;
+    width: 100%;
+    max-width: 500px;
+    padding: 10px;
+    margin-bottom: 12px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-family: inherit;
+    font-size: 14px;
+}
+
+.details form .container hr {
+    margin: 15px 0;
 }
 
 /* Mobile responsive layout */
