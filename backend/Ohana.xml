@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<family id="1">
+	<person id="1">
+		<firstName>Owen</firstName>
+		<lastName>Lytle</lastName>
+		<suffix></suffix>
+		<birthDate>02/27/2003</birthDate>
+		<deathDate></deathDate>
+		<spouseFirstName></spouseFirstName>
+		<spouseLastName></spouseLastName>
+		<parent1FirstName>Roy</parent1FirstName>
+		<parent1LastName>Lytle</parent1LastName>
+		<parent2FirstName>JoAnn</parent2FirstName>
+		<parent2LastName>Lytle</parent2LastName>
+		<bio>This is a test. My name is Owen and I'm a CS student at SUNY Oswego</bio>
+	</person>
+</family>
