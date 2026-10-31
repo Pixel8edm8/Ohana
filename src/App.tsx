@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import './style.css';
-
+// TODO: Replace the house and the plus sign with FontAwesome icons, so that they can be responsively scaled.
+// import { } from 'react-fontawesome';
 export default function App() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedAction, setSelectedAction] = useState<"create" | "open" | null>(null);
@@ -101,9 +102,6 @@ export default function App() {
             <button className="oauth-button" onClick={handleOAuth}>
               <span className="google-icon"></span>
               Continue with Google
-            </button>
-            <button className="oauth-button secondary-oauth" onClick={handleOAuth}>
-              Continue with another account
             </button>
           </div>
         </div>

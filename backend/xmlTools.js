@@ -28,7 +28,6 @@ function toXML(people) {
   return `<?xml version="1.0" encoding="UTF-8"?>\n<family>\n${body}</family>\n`;
 }
  
-
 function saveXML(people, filename = "family.xml") {
   const url = URL.createObjectURL(new Blob([toXML(people)], { type: "application/xml" }));
   const a = document.createElement("a");

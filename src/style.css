@@ -2,7 +2,6 @@
     --background: #f7f6f2;
     --surface: #ffffff;
     --green: #284f3b;
-    --green-dark: #e8f0ec;
     --sage: #edf1ec;
     --text: #252e27;
     --muted: #777c74;
@@ -146,7 +145,7 @@ h1 span {
 .option-card:hover {
     transform: translateY(-4px);
     border-color: #b6c7b6;
-    box-shadow: 0 12px 30px rgba(37, 60, 43, 0.07);
+    box-shadow: 0 12px 30px rgba(37, 60, 43);
 }
 
 .option-card:focus-visible,
@@ -346,7 +345,8 @@ footer {
 }
 
 .oauth-button:hover {
-    background: var(--green-dark);
+    background: var(--background);
+    color: var(--green)
 }
 
 .google-icon {
