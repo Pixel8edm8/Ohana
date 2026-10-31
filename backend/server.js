@@ -1,6 +1,6 @@
 import express from "express";
 import cors from "cors";
-import { loadFamily, addPerson, editPerson, removePerson } from "./family.js";
+import { loadFamily, addPerson, editPerson, removePerson } from "./xmlTools.js";
 
 const app = express();
 app.use(cors());          // frontend can use this
@@ -32,3 +32,5 @@ app.listen(3000);
 //Add Person POST /api/people JSON body with person data returned by addPerson()
 //Edit Person PATCH /api/people/:id JSON body with changes returned by editPerson()
 //Remove Person DELETE /api/people/:id returned by removePerson()
+
+//can connect to http://localhost:3000/api/people
