@@ -34,3 +34,11 @@ app.listen(3000);
 //Remove Person DELETE /api/people/:id returned by removePerson()
 
 //can connect to http://localhost:3000/api/people
+
+//Invoke-RestMethod -Uri http://localhost:3000/api/people -Method Post -ContentType "application/json" -Body '{"firstName":"Sam","lastName":"Example","birthDate":"01/15/1990","bio":"Added from terminal"}'
+
+//Invoke-RestMethod -Uri "http://localhost:3000/api/people/1" -Method Delete
+
+//Invoke-RestMethod http://localhost:3000/api/people
+
+//Invoke-RestMethod -Uri "http://localhost:3000/api/people/1" -Method Patch -ContentType "application/json" -Body '{"firstName":"Sam","lastName":"Example","bio":"Updated bio"}'
