@@ -6,19 +6,31 @@ const options = {
   ignoreAttributes: false,
   attributeNamePrefix: "@_",
   parseTagValue: false,
-  isArray: (_name, path) => path === "family.person",
+  isArray: (_name, path) => path === "families.family" || path === "families.family.person",
 };
 const parser = new XMLParser(options);
 const builder = new XMLBuilder({ ...options, format: true });
 
+
 export async function loadFamily() {
-  const { family } = parser.parse(await readFile(file, "utf8"));
-  return (family?.person ?? []).map(({ "@_id": id, ...fields }) => ({ id, ...fields }));
+  const { families } = parser.parse(await readFile(file, "utf8"));
+  return (families?.family ?? []).flatMap((fam) =>
+    (fam.person ?? []).map(({ "@_id": id, ...fields }) => ({
+      id,
+      familyId: fam["@_id"],
+      ...fields,
+    }))
+  );
 }
 
 async function saveFamily(people) {
-  const person = people.map(({ id, ...fields }) => ({ "@_id": String(id), ...fields }));
-  await writeFile(file, builder.build({ family: { person } }));
+  const byFamily = new Map();
+  for (const { id, familyId = "1", ...fields } of people) {
+    if (!byFamily.has(familyId)) byFamily.set(familyId, []);
+    byFamily.get(familyId).push({ "@_id": String(id), ...fields });
+  }
+  const family = [...byFamily].map(([fid, person]) => ({ "@_id": fid, person }));
+  await writeFile(file, builder.build({ families: { family } }));
   return people;
 }
 
