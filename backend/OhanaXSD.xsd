@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+	<xs:element name="families">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="family" maxOccurs="unbounded" minOccurs="0">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="person" maxOccurs="unbounded" minOccurs="0">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="firstName" type="xs:string" minOccurs="0"/>
+										<xs:element name="lastName" type="xs:string" minOccurs="0"/>
+										<xs:element name="suffix" type="xs:string" minOccurs="0"/>
+										<xs:element name="birthDate" type="xs:string" minOccurs="0"/>
+										<xs:element name="deathDate" type="xs:string" minOccurs="0"/>
+										<xs:element name="spouseFirstName" type="xs:string" minOccurs="0"/>
+										<xs:element name="spouseLastName" type="xs:string" minOccurs="0"/>
+										<xs:element name="spouseSuffix" type="xs:string" minOccurs="0"/>
+										<xs:element name="parent1FirstName" type="xs:string" minOccurs="0"/>
+										<xs:element name="parent1LastName" type="xs:string" minOccurs="0"/>
+										<xs:element name="parent1Suffix" type="xs:string" minOccurs="0"/>
+										<xs:element name="parent2FirstName" type="xs:string" minOccurs="0"/>
+										<xs:element name="parent2LastName" type="xs:string" minOccurs="0"/>
+										<xs:element name="parent2Suffix" type="xs:string" minOccurs="0"/>
+										<xs:element name="bio" type="xs:string" minOccurs="0"/>
+									</xs:sequence>
+									<xs:attribute name="id" type="positiveInteger" use="required"/>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+						<xs:attribute name="id" type="positiveInteger" use="required"/>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+	<xs:element name="family" maxOccurs="unbounded" minOccurs="0">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="person" maxOccurs="unbounded" minOccurs="0">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="firstName" type="xs:string" minOccurs="0"/>
+							<xs:element name="lastName" type="xs:string" minOccurs="0"/>
+							<xs:element name="suffix" type="xs:string" minOccurs="0"/>
+							<xs:element name="birthDate" type="xs:string" minOccurs="0"/>
+							<xs:element name="deathDate" type="xs:string" minOccurs="0"/>
+							<xs:element name="spouseFirstName" type="xs:string" minOccurs="0"/>
+							<xs:element name="spouseLastName" type="xs:string" minOccurs="0"/>
+							<xs:element name="spouseSuffix" type="xs:string" minOccurs="0"/>
+							<xs:element name="parent1FirstName" type="xs:string" minOccurs="0"/>
+							<xs:element name="parent1LastName" type="xs:string" minOccurs="0"/>
+							<xs:element name="parent1Suffix" type="xs:string" minOccurs="0"/>
+							<xs:element name="parent2FirstName" type="xs:string" minOccurs="0"/>
+							<xs:element name="parent2LastName" type="xs:string" minOccurs="0"/>
+							<xs:element name="parent2Suffix" type="xs:string" minOccurs="0"/>
+							<xs:element name="bio" type="xs:string" minOccurs="0"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>
