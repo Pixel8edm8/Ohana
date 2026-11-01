@@ -1,63 +1,43 @@
-import { XMLBuilder, XMLParser, XMLValidator } from "fast-xml-parser";
+import { readFile, writeFile } from "node:fs/promises";
+import { XMLBuilder, XMLParser } from "fast-xml-parser";
 
-const xmlOptions = {
+const file = new URL("Ohana.xml", import.meta.url);
+const options = {
   ignoreAttributes: false,
   attributeNamePrefix: "@_",
-  parseAttributeValue: false,
   parseTagValue: false,
-  trimValues: false,
-  isArray: (name) => name === "person",
+  isArray: (_name, path) => path === "family.person",
 };
+const parser = new XMLParser(options);
+const builder = new XMLBuilder({ ...options, format: true });
 
-const parser = new XMLParser(xmlOptions);
-const builder = new XMLBuilder({ ...xmlOptions, format: true });
-
-export function parseFamily(xml) {
-  const validation = XMLValidator.validate(xml);
-  if (validation !== true) throw new Error(`Invalid XML: ${validation.err.msg}`);
-
-  const people = parser.parse(xml)?.family?.person ?? [];
-  return people.map((person) => ({
-    id: person["@_id"],
-    ...Object.fromEntries(
-      Object.entries(person).filter(
-        ([key]) => key !== "@_id" && key !== "#text" && !key.startsWith("@_"),
-      ),
-    ),
-  }));
+export async function loadFamily() {
+  const { family } = parser.parse(await readFile(file, "utf8"));
+  return (family?.person ?? []).map(({ "@_id": id, ...fields }) => ({ id, ...fields }));
 }
 
-export const addPerson = (people, person) => [...people, person];
-
-export const editPerson = (people, id, changes) =>
-  people.map((person) =>
-    person.id === String(id) ? { ...person, ...changes } : person,
-  );
-
-export const removePerson = (people, id) =>
-  people.filter((person) => person.id !== String(id));
-
-export function toXML(people) {
-  return builder.build({
-    "?xml": { "@_version": "1.0", "@_encoding": "UTF-8" },
-    family: {
-      person: people.map(({ id, ...fields }) => ({
-        "@_id": id,
-        ...Object.fromEntries(
-          Object.entries(fields).filter(([, value]) => value != null),
-        ),
-      })),
-    },
-  });
+async function saveFamily(people) {
+  const person = people.map(({ id, ...fields }) => ({ "@_id": String(id), ...fields }));
+  await writeFile(file, builder.build({ family: { person } }));
+  return people;
 }
 
-export function saveXML(people, filename = "family.xml") {
-  const url = URL.createObjectURL(
-    new Blob([toXML(people)], { type: "application/xml" }),
-  );
-  const link = document.createElement("a");
-  link.href = url;
-  link.download = filename;
-  link.click();
-  URL.revokeObjectURL(url);
+export async function addPerson(person) {
+  const people = await loadFamily();
+  const nextId = Math.max(0, ...people.map((p) => Number(p.id) || 0)) + 1;
+  people.push({ ...person, id: person.id ?? String(nextId) });
+  return saveFamily(people);
+}
+
+export async function editPerson(id, changes) {
+  const people = await loadFamily();
+  const person = people.find((p) => p.id === String(id));
+  if (!person) throw new Error(`No person with id ${id}`);
+  Object.assign(person, changes);
+  return saveFamily(people);
+}
+
+export async function removePerson(id) {
+  const people = await loadFamily();
+  return saveFamily(people.filter((p) => p.id !== String(id)));
 }
