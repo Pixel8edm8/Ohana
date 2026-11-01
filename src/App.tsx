@@ -1,11 +1,14 @@
 import { useState, useEffect } from 'react';
-import './style.css';
+import './styles/style.css';
+import { GoogleLogin } from '@react-oauth/google';
+import { Route, Routes, useNavigate } from 'react-router-dom';
+import FamilyTree from './pages/FamilyTree';
 // TODO: Replace the house and the plus sign with FontAwesome icons, so that they can be responsively scaled.
 // import { } from 'react-fontawesome';
 export default function App() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedAction, setSelectedAction] = useState<"create" | "open" | null>(null);
-
+  const navigate = useNavigate();
   const openLogin = (action: "create" | "open") => {
     setSelectedAction(action);
     setIsModalOpen(true);
@@ -34,17 +37,10 @@ export default function App() {
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, [isModalOpen]);
 
-  const handleOAuth = () => {
-    if (!selectedAction) return;
-    alert(
-      "Required access for OAuth login.\n\n" +
-      "Selected action: " +
-      (selectedAction === "create" ? "Create a New Tree" : "Open an Existing Tree")
-    );
-  };
-
   return (
-    <>
+    <Routes>
+      <Route path="/" element={
+        <>
       <header className="navbar">
         <a href="#" className="logo">
           <img src="/images/OhanaLogo.png" alt="Ohana Family Tree" />
@@ -99,13 +95,25 @@ export default function App() {
             <p id="modalDescription">
               {selectedAction === "create" ? "Sign in to start." : "Sign in to access your existing family trees."}
             </p>
-            <button className="oauth-button" onClick={handleOAuth}>
-              <span className="google-icon"></span>
-              Continue with Google
-            </button>
+            <div className=''>
+              <GoogleLogin 
+              onSuccess={(credentialSuccess) => {
+                console.log("Credential Success!");
+                console.log(credentialSuccess.clientId);
+                navigate('/tree');
+              }}
+              onError={() => {
+                console.log("Damn. It didn't work.");
+              }}
+              ></GoogleLogin>
+            </div>
           </div>
         </div>
       )}
     </>
+      }></Route>
+      {/* TODO: Fix this later so that we can give links for different trees. */}
+      <Route path="/tree" element={<FamilyTree />}></Route>
+    </Routes>
   );
 }
