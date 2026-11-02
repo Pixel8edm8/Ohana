@@ -21,16 +21,24 @@ export async function loadDatabase()
 	const tempList = [];
     for (let i = 0; i < allPersonFields.length; i++) 
 	{
-      const currentItemElement = allPersonFields[i];
+		const currentItemElement = allPersonFields[i];
 
-      const nameValue = currentItemElement.getElementsByTagName('name').textContent;
-      const noteValue = currentItemElement.getElementsByTagName('note').textContent;
+		const fnameValue = currentItemElement.getElementsByTagName('firstName').textContent;
+		const lnameValue = currentItemElement.getElementsByTagName('lastName').textContent;
+		const suffixValue = currentItemElement.getElementsByTagName('suffix').textContent;
+		const dobValue = currentItemElement.getElementsByTagName('birthDate').textContent;
+		const dodValue = currentItemElement.getElementsByTagName('deathDate').textContent;
+		const bioValue = currentItemElement.getElementsByTagName('bio').textContent;
 
 	  const formattedPerson = 
 	  {
-		id: i,
-		name: x,
-		note: xx
+		  id: i+1,
+		  firstName: fnameValue,
+		  lastName: lnameValue,
+		  suffix: suffixValue,
+		  dobValue: birthDate,
+		  dodValue: deathDate,
+		  bioValue: bio
 	  };
 	  
 	  tempList.push(formattedPerson);
