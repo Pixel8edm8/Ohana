@@ -12,7 +12,7 @@ export async function loadDatabase()
 	const visualListContainer = document.getElementById('person-display-list');
 	  if (visualListContainer != undefined) { visualListContainer.innerHTML = ''; }
 
-	const tempList = [];
+	const tempList = [a,a,a];
 	  for (let i = 0; i < allPersonFields.length; i++)
 	  {
 		  const currentItemElement = allPersonFields[i];
