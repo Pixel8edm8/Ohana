@@ -1,5 +1,3 @@
-import { useState, useEffect } from 'react';
-
 export async function loadDatabase() 
 {  
   try 
@@ -11,17 +9,20 @@ export async function loadDatabase()
     const parsedXmlDocument = xmlTranslatorEngine.parseFromString(rawXmlTextString, 'application/xml');
     const allPersonFields = parsedXmlDocument.querySelectorAll('person');
 
+	const visualListContainer = document.getElementById('person-display-list');
+    visualListContainer.innerHTML = '';
+
 	const tempList = [];
     for (let i = 0; i < allPersonFields.length; i++) 
 	{
 		const currentItemElement = allPersonFields[i];
 
-		const fnameValue = currentItemElement.getElementsByTagName('firstName').textContent;
-		const lnameValue = currentItemElement.getElementsByTagName('lastName').textContent;
-		const suffixValue = currentItemElement.getElementsByTagName('suffix').textContent;
-		const dobValue = currentItemElement.getElementsByTagName('birthDate').textContent;
-		const dodValue = currentItemElement.getElementsByTagName('deathDate').textContent;
-		const bioValue = currentItemElement.getElementsByTagName('bio').textContent;
+		const fnameValue = currentItemElement.querySelector('firstName').textContent;
+		const lnameValue = currentItemElement.querySelector('lastName').textContent;
+		const suffixValue = currentItemElement.querySelector('suffix').textContent;
+		const dobValue = currentItemElement.querySelector('birthDate').textContent;
+		const dodValue = currentItemElement.querySelector('deathDate').textContent;
+		const bioValue = currentItemElement.querySelector('bio').textContent;
 
 	  const formattedPerson = 
 	  {
