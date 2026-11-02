@@ -8,15 +8,8 @@ export async function loadDatabase()
     
     const rawXmlTextString = await networkResponse.text();
     const xmlTranslatorEngine = new DOMParser();
-    
     const parsedXmlDocument = xmlTranslatorEngine.parseFromString(rawXmlTextString, 'application/xml');
-
     const allPersonFields = parsedXmlDocument.querySelectorAll('person');
-    
-    // Line 8: Find your pre-existing HTML list container inside your HTML page using its unique ID identifier.
-    const visualListContainer = document.getElementById('item-display-list');
-    
-    visualListContainer.innerHTML = '';
 
 	const tempList = [];
     for (let i = 0; i < allPersonFields.length; i++) 
