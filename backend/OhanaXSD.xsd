@@ -14,15 +14,9 @@
 										<xs:element name="suffix" type="xs:string" minOccurs="0"/>
 										<xs:element name="birthDate" type="xs:string" minOccurs="0"/>
 										<xs:element name="deathDate" type="xs:string" minOccurs="0"/>
-										<xs:element name="spouseFirstName" type="xs:string" minOccurs="0"/>
-										<xs:element name="spouseLastName" type="xs:string" minOccurs="0"/>
-										<xs:element name="spouseSuffix" type="xs:string" minOccurs="0"/>
-										<xs:element name="parent1FirstName" type="xs:string" minOccurs="0"/>
-										<xs:element name="parent1LastName" type="xs:string" minOccurs="0"/>
-										<xs:element name="parent1Suffix" type="xs:string" minOccurs="0"/>
-										<xs:element name="parent2FirstName" type="xs:string" minOccurs="0"/>
-										<xs:element name="parent2LastName" type="xs:string" minOccurs="0"/>
-										<xs:element name="parent2Suffix" type="xs:string" minOccurs="0"/>
+										<xs:element name="spouseID" type="xs:positiveInteger" minOccurs="0"/>
+										<xs:element name="parent1ID" type="xs:positiveInteger" minOccurs="0"/>
+										<xs:element name="parent2ID" type="xs:positiveInteger" minOccurs="0"/>
 										<xs:element name="bio" type="xs:string" minOccurs="0"/>
 									</xs:sequence>
 									<xs:attribute name="id" type="xs:positiveInteger" use="required"/>
