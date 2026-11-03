@@ -1,4 +1,7 @@
-<families>
+<families 
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:noNamespaceSchemaLocation="OhanaXSD.xsd"
+>
   <family id="1">
     <person id="1">
       <firstName>Bob</firstName>
