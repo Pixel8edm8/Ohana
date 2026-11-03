@@ -1,26 +1,4 @@
-import { useState, useEffect } from 'react';
 
-
-  const handleOverlayClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (e.target === e.currentTarget) {
-      closeLogin();
-    }
-  };
-
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape" && isModalOpen) {
-        closeLogin();
-      }
-    };
-    document.addEventListener("keydown", handleKeyDown);
-    return () => document.removeEventListener("keydown", handleKeyDown);
-  }, [isModalOpen]);
-
-  return (
-    <Routes>
-      <Route path="/" element={
-        <>
       <header className="navbar">
         <a href="#" className="logo">
           <img src="/images/OhanaLogo.png" alt="Ohana Family Tree" />
