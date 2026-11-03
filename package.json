@@ -2,6 +2,7 @@
   "name": "ohana",
   "version": "v0.0.1",
   "description": "",
+  "private": true,
   "main": "LoginScript.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -21,6 +22,7 @@
   },
   "homepage": "https://github.com/Pixel8edm8/Ohana#readme",
   "dependencies": {
+    "lucide-react": "^0.468.0",
     "@fortawesome/fontawesome-svg-core": "^7.3.1",
     "@fortawesome/free-brands-svg-icons": "^7.3.1",
     "@fortawesome/free-regular-svg-icons": "^7.3.1",

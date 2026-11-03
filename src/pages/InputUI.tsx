@@ -97,7 +97,7 @@ function formatDate(value: string) {
     : new Intl.DateTimeFormat(undefined, { month: 'short', day: 'numeric', year: 'numeric' }).format(date)
 }
 
-function App() {
+function InputUI() {
   const [members, setMembers] = useState<Member[]>(() => readStored(MEMBER_KEY, []))
   const [relationships, setRelationships] = useState<Relationship[]>(() => readStored(RELATION_KEY, []))
   const [firstName, setFirstName] = useState('')
@@ -116,6 +116,8 @@ function App() {
   const [showAll, setShowAll] = useState(false)
   const [notice, setNotice] = useState('')
 
+  //Saving members and relationships to local browser storage just in case backend
+  // server doesn't necessarily save the data
   useEffect(() => {
     localStorage.setItem(MEMBER_KEY, JSON.stringify(members))
   }, [members])
@@ -380,7 +382,16 @@ function App() {
           <section className="directory-section" id="member-list">
             <div className="directory-heading">
               <div><div className="eyebrow"></div><h2>Family directory</h2></div>
-              <div className="directory-count">{members.length} {members.length === 1 ? 'person' : 'people'}</div>
+              <div className="footer-actions">
+            <div className="directory-count">{members.length} {members.length === 1 ? 'person' : 'people'}</div>
+            </div>
+            <button
+              type="button"
+              className="button-primary"
+              onClick={sendToBackend}
+            >
+              Save your changes
+            </button>
             </div>
             <div className="directory-toolbar">
               <div className="search-box"><Search size={16} /><input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search family members" /></div>
@@ -420,6 +431,34 @@ function App() {
       </div>
     </div>
   )
+async function sendToBackend() {
+  try {
+    const response = await fetch('http://localhost:3001/api/family', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        members: members,
+        relationships: relationships
+      })
+    })
+
+    const result = await response.json()
+
+    if (!response.ok) {
+      throw new Error(result.message)
+    }
+
+    console.log('Successfully sent:', result)
+    setNotice('Data sent to')
+
+  } catch (error) {
+    console.error('Backend error:', error)
+    setNotice('Could not connect to backend.')
+  }
 }
 
-export default App
+
+}
+export default InputUI
