@@ -1,25 +1,5 @@
 import { useState, useEffect } from 'react';
-import './styles/style.css';
-import { GoogleLogin } from '@react-oauth/google';
-import { Route, Routes, useNavigate } from 'react-router-dom';
-import FamilyTree from './pages/FamilyTree';
-// TODO: Replace the house and the plus sign with FontAwesome icons, so that they can be responsively scaled.
-// import { } from 'react-fontawesome';
-export default function App() {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedAction, setSelectedAction] = useState<"create" | "open" | null>(null);
-  const navigate = useNavigate();
-  const openLogin = (action: "create" | "open") => {
-    setSelectedAction(action);
-    setIsModalOpen(true);
-    document.body.style.overflow = "hidden";
-  };
 
-  const closeLogin = () => {
-    setIsModalOpen(false);
-    setSelectedAction(null);
-    document.body.style.overflow = "";
-  };
 
   const handleOverlayClick = (e: React.MouseEvent<HTMLDivElement>) => {
     if (e.target === e.currentTarget) {
