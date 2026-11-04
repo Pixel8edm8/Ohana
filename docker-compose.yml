@@ -1,0 +1,32 @@
+# Docker Compose for Ohana - One-Command Setup
+# Usage: docker compose up -d
+version: '3.8'
+
+services:
+  ohana-app:
+    build:
+      context: .
+      target: production  # Use the production stage from our multi-stage Dockerfile
+      args:
+        NODE_VERSION: "20"  # Node.js version
+    ports:
+      - "3000:3000"  # Expose port for frontend/backend
+    environment:
+      - NODE_ENV=production
+    env_file:
+      - .env  # Load your environment variables
+    volumes:
+      # Optional: Mount backend code if you need hot reload during development
+      # Uncomment this line and place backend folder appropriately
+      # - ./backend:/app/backend:ro
+    restart: unless-stopped  # Auto-restart when container stops
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 40s
+
+# Build arguments for Dockerfile
+args:
+  NODE_VERSION: "20"
