@@ -11,23 +11,71 @@ env:
   GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
 
 jobs:
-  build-and-test:
+  docker-build-push-and-test:
     runs-on: ubuntu-latest
     
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
       
-      - name: Setup Node.js
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      
+      - name: Cache Docker layers
+        uses: actions/cache@v4
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-
+
+      - name: Login to GitHub Container Registry (GHCR)
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Lowercase Repository Name
+        run: |
+          echo "REPO_LC=${GITHUB_REPOSITORY,,}" >> ${GITHUB_ENV}
+      
+      - name: Build and Push Docker image to GHCR
+        run: |
+          IMAGE_NAME="ghcr.io/${{ env.REPO_LC }}"
+          
+          # Build the Docker image (Removed --target production)
+          docker build \
+            -t $IMAGE_NAME:${GITHUB_SHA:-latest} \
+            -t $IMAGE_NAME:latest \
+            --progress=plain \
+            .
+          
+          # Push to GHCR (Removed the || echo error swallowing)
+          # Only push if it's a merge/push to main, not on PRs
+          if [ "${{ github.event_name }}" = "push" ]; then
+            docker push $IMAGE_NAME:${GITHUB_SHA:-latest}
+            docker push $IMAGE_NAME:latest
+          fi
+
+  npm-build-and-test:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js (Matched to Dockerfile)
         uses: actions/setup-node@v4
         with:
-          node-version: '26'
+          node-version: '20'
           cache: 'npm'
       
       - name: Install dependencies
-        run: npm ci
+        # Using legacy-peer-deps to handle the TypeScript/ESLint conflicts
+        run: npm install --legacy-peer-deps
       
-      - name: Build and Test
+      - name: Build with Vite
         env:
           GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
           GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}

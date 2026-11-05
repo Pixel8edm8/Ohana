@@ -1,0 +1,12 @@
+# docker-compose.yml
+services:
+  ohana-app:
+    build:
+      context: .
+    ports:
+      - "3000:3000" 
+    environment:
+      - NODE_ENV=development
+    env_file:
+      - .env
+    restart: unless-stopped
