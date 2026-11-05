@@ -1,23 +1,12 @@
-# Docker Compose for Ohana - One-Command Setup
-# Usage: docker compose up -d
+# docker-compose.yml
 services:
   ohana-app:
     build:
       context: .
-      target: production  # Use the production stage from our multi-stage Dockerfile
     ports:
-      - "3000:3000"  # Expose port for frontend/backend
+      - "3000:3000" 
     environment:
-      - NODE_ENV=production
+      - NODE_ENV=development
     env_file:
-      - .env  # Load your environment variables
-    restart: unless-stopped  # Auto-restart when container stops
-    healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/"]
-      interval: 30s
-      timeout: 3s
-      retries: 3
-      start_period: 40s
-
-# Note: Build arguments (args) are defined in Dockerfile, not docker-compose.yml
-# The Dockerfile already includes build args if needed for multi-stage builds
+      - .env
+    restart: unless-stopped
