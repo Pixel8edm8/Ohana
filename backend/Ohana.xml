@@ -1,19 +1,32 @@
-<families 
+<families
 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-xsi:noNamespaceSchemaLocation="OhanaXSD.xsd"
->
+xsi:noNamespaceSchemaLocation="OhanaXSD.xsd">
   <family id="1">
     <person id="1">
       <firstName>Bob</firstName>
       <middleName>Joe</middleName>
       <lastName>Smith</lastName>
-      <suffix></suffix>
+      <suffix>Sr.</suffix>
       <birthDate>01/29/1960</birthDate>
-      <deathDate></deathDate>
-      <spouseID></spouseID>
-      <parent1ID></parent1ID>
-      <parent2ID></parent2ID>
-      <bio></bio>
+      <deathDate>Present</deathDate>
+      <spouseID xsi:nil="true"/>
+      <parent1ID xsi:nil="true"/>
+      <parent2ID xsi:nil="true"/>
+      <bio>Hi, I'm Bob!</bio>
+    </person>
+  </family>
+  <family id="2">
+    <person id="1">
+      <firstName>Richard</firstName>
+      <middleName>Milhous</middleName>
+      <lastName>Nixon</lastName>
+      <suffix></suffix>
+      <birthDate>01/09/1913</birthDate>
+      <deathDate>04/22/1994</deathDate>
+      <spouseID xsi:nil="true"/>
+      <parent1ID xsi:nil="true"/>
+      <parent2ID xsi:nil="true"/>
+      <bio>The 37th President of the USA</bio>
     </person>
   </family>
 </families>

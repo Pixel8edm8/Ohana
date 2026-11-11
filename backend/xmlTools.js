@@ -53,3 +53,11 @@ export async function removePerson(id) {
   const people = await loadFamily();
   return saveFamily(people.filter((p) => p.id !== String(id)));
 }
+
+// export async function addFamily() {
+//
+// }
+//
+// export async function removeFamily(id) {
+//
+// }
