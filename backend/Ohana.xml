@@ -1,7 +1,7 @@
 <families
 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 xsi:noNamespaceSchemaLocation="OhanaXSD.xsd">
-  <family id="1">
+  <tree id="1">
     <person id="1">
       <firstName>Bob</firstName>
       <middleName>Joe</middleName>
@@ -14,8 +14,8 @@ xsi:noNamespaceSchemaLocation="OhanaXSD.xsd">
       <parent2ID xsi:nil="true"/>
       <bio>Hi, I'm Bob!</bio>
     </person>
-  </family>
-  <family id="2">
+  </tree>
+  <tree id="2">
     <person id="1">
       <firstName>Richard</firstName>
       <middleName>Milhous</middleName>
@@ -28,5 +28,5 @@ xsi:noNamespaceSchemaLocation="OhanaXSD.xsd">
       <parent2ID xsi:nil="true"/>
       <bio>The 37th President of the USA</bio>
     </person>
-  </family>
+  </tree>
 </families>

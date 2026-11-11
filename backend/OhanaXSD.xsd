@@ -3,7 +3,7 @@
 	<xs:element name="families">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element name="family" maxOccurs="unbounded" minOccurs="0">
+				<xs:element name="tree" maxOccurs="unbounded" minOccurs="0">
 					<xs:complexType>
 						<xs:sequence>
 							<xs:element name="person" maxOccurs="unbounded" minOccurs="0">
