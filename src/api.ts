@@ -2,7 +2,7 @@ export async function loadDatabase()
 {  
   try 
   {
-    const networkResponse = await fetch('http://localhost:3000/api/items');
+    const networkResponse = await fetch('http://localhost:3000/../backend/Ohana.xml');
     
     const rawXmlTextString = await networkResponse.text();
     const xmlTranslator = new DOMParser();
@@ -45,5 +45,28 @@ export async function loadDatabase()
     console.error('Failed to acquire data:', error);
 	return [];
   }
+}
+
+export async function sendToBackend(data: any) {
+    try {
+        const response = await fetch('http://localhost:3001/../../backend/Ohana.xml', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/xml',
+            },
+            body: data
+        });
+
+        const result = await response.json()
+
+        if (!response.ok) {
+            throw new Error(result.message)
+        }
+
+        console.log('Successfully sent:', result)
+    }
+    catch (error) {
+        console.error('Backend error:', error)
+    }
 }
 loadDatabase();
