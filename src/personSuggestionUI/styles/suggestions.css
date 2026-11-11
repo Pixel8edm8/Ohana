@@ -1,0 +1,142 @@
+/* Plain, minimal styling. */
+
+.suggestion-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: rgba(0, 0, 0, 0.35);
+}
+
+.suggestion-dialog {
+  position: relative;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 440px;
+  max-height: 85vh;
+  overflow-y: auto;
+  padding: 24px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  background: #fff;
+  color: #222;
+  font-family: inherit;
+}
+
+.suggestion-dialog h2 {
+  margin: 0 24px 10px 0;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.suggestion-dialog p {
+  color: #555;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.suggestion-close {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  border: 0;
+  background: transparent;
+  color: #555;
+  font-size: 23px;
+  cursor: pointer;
+}
+
+.suggestion-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.suggestion-grid label {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  color: #333;
+  font-size: 13px;
+}
+
+.suggestion-grid input:not([type="checkbox"]),
+.suggestion-grid textarea {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 9px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background: #fff;
+  color: #222;
+  font: inherit;
+  font-size: 14px;
+}
+
+.suggestion-grid textarea {
+  resize: vertical;
+}
+
+.suggestion-wide {
+  grid-column: 1 / -1;
+}
+
+.suggestion-living {
+  flex-direction: row !important;
+  align-items: center;
+  align-self: end;
+  min-height: 36px;
+}
+
+.suggestion-notice {
+  padding: 9px;
+  background: #f4f4f4;
+  font-size: 12px !important;
+}
+
+.suggestion-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 18px;
+}
+
+.suggestion-actions button {
+  padding: 9px 13px;
+  border: 1px solid #222;
+  border-radius: 4px;
+  background: #222;
+  color: #fff;
+  font: inherit;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.suggestion-actions .suggestion-secondary {
+  border-color: #ccc;
+  background: #fff;
+  color: #222;
+}
+
+.suggestion-actions button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.suggestion-error {
+  color: #a22 !important;
+  font-size: 13px !important;
+}
+
+@media (max-width: 480px) {
+  .suggestion-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .suggestion-wide {
+    grid-column: auto;
+  }
+}
