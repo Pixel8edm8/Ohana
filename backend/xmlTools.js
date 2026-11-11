@@ -11,6 +11,14 @@ const options = {
 const parser = new XMLParser(options);
 const builder = new XMLBuilder({ ...options, format: true });
 
+export async function addFamily() {
+  const readXML = await readFile(file, "utf8");
+  const parseXML = parser.parse(readXML);
+}
+
+// export async function removeFamily(familyID) {
+//
+// }
 
 export async function loadFamily() {
   const { families } = parser.parse(await readFile(file, "utf8"));
@@ -24,14 +32,14 @@ export async function loadFamily() {
 }
 
 async function saveFamily(people) {
-  const byFamily = new Map();
-  for (const { id, familyId = "1", ...fields } of people) {
-    if (!byFamily.has(familyId)) byFamily.set(familyId, []);
-    byFamily.get(familyId).push({ "@_id": String(id), ...fields });
-  }
-  const family = [...byFamily].map(([fid, person]) => ({ "@_id": fid, person }));
-  await writeFile(file, builder.build({ families: { family } }));
-  return people;
+  // const byFamily = new Map();
+  // for (const { id, familyId = "1", ...fields } of people) {
+  //   if (!byFamily.has(familyId)) byFamily.set(familyId, []);
+  //   byFamily.get(familyId).push({ "@_id": String(id), ...fields });
+  // }
+  // const family = [...byFamily].map(([fid, person]) => ({ "@_id": fid, person }));
+  // await writeFile(file, builder.build({ families: { family } }));
+  // return people;
 }
 
 export async function addPerson(person) {
@@ -53,11 +61,3 @@ export async function removePerson(id) {
   const people = await loadFamily();
   return saveFamily(people.filter((p) => p.id !== String(id)));
 }
-
-// export async function addFamily() {
-//
-// }
-//
-// export async function removeFamily(id) {
-//
-// }
