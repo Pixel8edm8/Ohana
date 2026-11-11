@@ -20,6 +20,7 @@ export async function loadDatabase()
 		  if (!(currentItemElement === undefined)) 
 		  {
 			  const fnameValue = currentItemElement.querySelector('firstName')?.textContent;
+              const mnameValue = currentItemElement.querySelector('middleName')?.textContent;
 			  const lnameValue = currentItemElement.querySelector('lastName')?.textContent;
 			  const suffixValue = currentItemElement.querySelector('suffix')?.textContent;
 			  const dobValue = currentItemElement.querySelector('birthDate')?.textContent;
@@ -29,6 +30,7 @@ export async function loadDatabase()
 			  {
 				  id: i + 1,
 				  firstName: fnameValue,
+                  middlename: mnameValue,
 				  lastName: lnameValue,
 				  suffix: suffixValue,
 				  birthDate: dobValue,
