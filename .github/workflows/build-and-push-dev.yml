@@ -1,0 +1,33 @@
+name: Build and Push Dev Image
+
+on:
+  push:
+    branches:
+      - dev # Only triggers when code is pushed or merged into the dev branch
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        # By default, checkout grabs the branch that triggered the workflow (dev)
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          # Tags the image as 'dev' instead of 'latest'
+          tags: ghcr.io/pixel8edm8/ohana:dev
