@@ -4,6 +4,9 @@ import {
   GitBranch,Link2, Plus, Search, Trash2,
   Users, UserRound, X,
 } from 'lucide-react'
+import { create } from 'xmlbuilder2';
+import { sendToBackend } from '../api.ts';
+
 
 type RelationKind =
   | 'Parent' | 'Child' | 'Sibling' | 'Spouse / partner'
@@ -200,6 +203,14 @@ function InputUI() {
       })
     })
 
+    //-----------------------------------------------------------------
+    const jsonData = {
+        newMember: newMember,
+    };
+    const xmlString = create(jsonData).end({ prettyPrint: true });
+    sendToBackend(xmlString);
+    //-----------------------------------------------------------------
+
     setMembers((current) => [newMember, ...current])
     setRelationships((current) => [...current, ...nextRelationships])
     resetForm()
@@ -221,7 +232,7 @@ function InputUI() {
       .filter((relationship) => relationship.fromId === memberId)
       .map((relationship) => ({ ...relationship, person: memberById.get(relationship.toId) }))
       .filter((relationship) => relationship.person)
-  }
+      }
 
   return (
     <div className="app-shell">
@@ -431,34 +442,4 @@ function InputUI() {
       </div>
     </div>
   )
-async function sendToBackend() {
-  try {
-    const response = await fetch('http://localhost:3001/api/family', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        members: members,
-        relationships: relationships
-      })
-    })
-
-    const result = await response.json()
-
-    if (!response.ok) {
-      throw new Error(result.message)
-    }
-
-    console.log('Successfully sent:', result)
-    setNotice('Data sent to')
-
-  } catch (error) {
-    console.error('Backend error:', error)
-    setNotice('Could not connect to backend.')
-  }
-}
-
-
-}
 export default InputUI
