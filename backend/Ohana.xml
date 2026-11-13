@@ -1,6 +1,4 @@
-<families
-xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-xsi:noNamespaceSchemaLocation="OhanaXSD.xsd">
+<families xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="OhanaXSD.xsd">
   <tree id="1">
     <person id="1">
       <firstName>Bob</firstName>
@@ -9,10 +7,34 @@ xsi:noNamespaceSchemaLocation="OhanaXSD.xsd">
       <suffix>Sr.</suffix>
       <birthDate>01/29/1960</birthDate>
       <deathDate>Present</deathDate>
-      <spouseID xsi:nil="true"/>
-      <parent1ID xsi:nil="true"/>
-      <parent2ID xsi:nil="true"/>
-      <bio>Hi, I'm Bob!</bio>
+      <spouseID xsi:nil="true"></spouseID>
+      <parent1ID xsi:nil="true"></parent1ID>
+      <parent2ID xsi:nil="true"></parent2ID>
+      <bio>Hi, I&apos;m Bob!</bio>
+    </person>
+    <person id="2">
+      <firstName>Greg</firstName>
+      <middleName>William</middleName>
+      <lastName>Johnson</lastName>
+      <suffix></suffix>
+      <birthDate>04/01/2000</birthDate>
+      <deathDate>Present</deathDate>
+      <spouseID xsi:nil="true"></spouseID>
+      <parent1ID xsi:nil="true"></parent1ID>
+      <parent2ID xsi:nil="true"></parent2ID>
+      <bio>This is a test.</bio>
+    </person>
+    <person id="3">
+      <firstName>Test</firstName>
+      <middleName>Person</middleName>
+      <lastName>Example</lastName>
+      <suffix></suffix>
+      <birthDate>05/12/1985</birthDate>
+      <deathDate></deathDate>
+      <spouseID xsi:nil="true"></spouseID>
+      <parent1ID xsi:nil="true"></parent1ID>
+      <parent2ID xsi:nil="true"></parent2ID>
+      <bio>Added from a test script</bio>
     </person>
   </tree>
   <tree id="2">
@@ -23,10 +45,11 @@ xsi:noNamespaceSchemaLocation="OhanaXSD.xsd">
       <suffix></suffix>
       <birthDate>01/09/1913</birthDate>
       <deathDate>04/22/1994</deathDate>
-      <spouseID xsi:nil="true"/>
-      <parent1ID xsi:nil="true"/>
-      <parent2ID xsi:nil="true"/>
+      <spouseID xsi:nil="true"></spouseID>
+      <parent1ID xsi:nil="true"></parent1ID>
+      <parent2ID xsi:nil="true"></parent2ID>
       <bio>The 37th President of the USA</bio>
     </person>
   </tree>
+  <tree id="3"></tree>
 </families>
