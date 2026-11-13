@@ -331,7 +331,7 @@ function InputUI() {
                             </select><ChevronDown size={15} /></div>
                           </label>
                           <label className="field">
-                            <span>New person's relationship</span>
+                            <span>New person&apos;s relationship</span>
                             <div className="select-wrap"><select value={link.kind} onChange={(event) => updateLink(link.id, 'kind', event.target.value)}>
                               <option value="">Select relationship</option>
                               {relationKinds.map((kind) => <option value={kind} key={kind}>{kind}</option>)}
@@ -458,7 +458,5 @@ async function sendToBackend() {
     setNotice('Could not connect to backend.')
   }
 }
-
-
 }
 export default InputUI
