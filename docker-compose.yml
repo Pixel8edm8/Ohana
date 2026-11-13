@@ -1,12 +1,13 @@
 # docker-compose.yml
 services:
   ohana-app:
+    image: ghcr.io/pixel8edm8/ohana:latest
     build:
       context: .
     ports:
-      - "3000:3000" 
+      - "8080:80" 
     environment:
-      - NODE_ENV=development
+      - NODE_ENV=production
     env_file:
       - .env
     restart: unless-stopped

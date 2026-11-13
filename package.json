@@ -22,7 +22,6 @@
   },
   "homepage": "https://github.com/Pixel8edm8/Ohana#readme",
   "dependencies": {
-    "lucide-react": "^0.468.0",
     "@fortawesome/fontawesome-svg-core": "^7.3.1",
     "@fortawesome/free-brands-svg-icons": "^7.3.1",
     "@fortawesome/free-regular-svg-icons": "^7.3.1",
@@ -33,24 +32,31 @@
     "express": "^5.3.0",
     "fast-xml-parser": "^5.11.2",
     "jsonwebtoken": "^9.0.3",
+    "lucide-react": "^0.468.0",
     "react": "^19.3.1",
     "react-dom": "^19.3.1",
     "react-fontawesome": "^1.7.1",
     "react-router-dom": "^7.18.5"
   },
   "devDependencies": {
+    "@eslint/js": "^9.39.5",
     "@types/node": "^26.6.6",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
     "@types/react-fontawesome": "^1.6.8",
     "@vitejs/plugin-react": "^6.1.2",
     "dotenv": "^18.0.9",
-    "eslint": "^10.14.0",
+    "eslint": "^9.39.5",
+    "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^7.1.1",
-    "typescript": "^7.0.2",
+    "eslint-plugin-react-refresh": "^0.5.7",
+    "globals": "^17.14.0",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.72.2",
     "vite": "^8.3.5",
     "vite-plugin-checker": "^0.14.5",
     "vite-plugin-svgr": "^5.2.0",
-    "vite-tsconfig-paths": "^6.1.1"
+    "vite-tsconfig-paths": "^6.1.1",
+    "xmlbuilder2": "^4.0.3"
   }
 }
