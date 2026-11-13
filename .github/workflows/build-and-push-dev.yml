@@ -5,6 +5,10 @@ on:
     branches:
       - dev # Only triggers when code is pushed or merged into the dev branch
 
+permissions:
+  contents: read
+  packages: write
+
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
