@@ -132,7 +132,7 @@ export default function App() {
                         navigate("/input");
                       }}
                       onError={() => {
-                        console.log("Damn. It didn't work.");
+                        console.error("OAuth Credential was not accepted.");
                       }}
                     ></GoogleLogin>
                   </div>
