@@ -51,5 +51,18 @@
       <bio>The 37th President of the USA</bio>
     </person>
   </tree>
-  <tree id="3"></tree>
+  <tree id="3">
+    <person id="1">
+      <firstName>Billy</firstName>
+      <middleName>Bob</middleName>
+      <lastName>Joe</lastName>
+      <suffix></suffix>
+      <birthDate>05/12/1985</birthDate>
+      <deathDate></deathDate>
+      <spouseID xsi:nil="true"></spouseID>
+      <parent1ID xsi:nil="true"></parent1ID>
+      <parent2ID xsi:nil="true"></parent2ID>
+      <bio>added first person to the tree</bio>
+    </person>
+  </tree>
 </families>

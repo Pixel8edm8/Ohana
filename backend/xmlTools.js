@@ -24,7 +24,7 @@ const builder = new XMLBuilder(options);
 export async function readXML() {
   const read_xml = await readFile(file, "utf8");
   const parse_xml = parser.parse(read_xml);
-  return parse_xml.families.tree ?? [];
+  return parse_xml.families ?? [];
 }
 
 async function writeXML(people) {
@@ -55,12 +55,20 @@ export async function addPerson(personData, treeID) {
   for (const tree of arrayOfTrees) {
     if (tree["@_id"] === String(treeID)) {
       let highestID = 0;
-      for (const person of tree.person) {
-        highestID++;
+      if (tree.person === undefined) {
+        highestID = "1";
+        tree.person = [];
+        tree.person.push({...personData, "@_id" : highestID});
+        await writeXML(arrayOfTrees);
       }
-      const newPersonID = String(highestID + 1);
-      tree.person.push({...personData, "@_id" : newPersonID});
-      await writeXML(arrayOfTrees);
+      else {
+        for (const person of tree.person) {
+          highestID++;
+        }
+        const newPersonID = String(highestID + 1);
+        tree.person.push({...personData, "@_id" : newPersonID});
+        await writeXML(arrayOfTrees);
+      }
     }
   }
 }
