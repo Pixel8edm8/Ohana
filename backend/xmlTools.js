@@ -24,7 +24,7 @@ const builder = new XMLBuilder(options);
 export async function readXML() {
   const read_xml = await readFile(file, "utf8");
   const parse_xml = parser.parse(read_xml);
-  return parse_xml.families ?? [];
+  return parse_xml.families.tree ?? [];
 }
 
 async function writeXML(people) {
@@ -35,18 +35,29 @@ async function writeXML(people) {
 export async function addTree() {
   const arrayOfTrees = await readXML();
 
-  let highestID = 0;
+  let highestID = 1;
+
   for (const tree of arrayOfTrees) {
     highestID++;
   }
-  const newTreeID = String(highestID + 1);
+  const newTreeID = String(highestID);
 
   arrayOfTrees.push({"@_id" : newTreeID});
   await writeXML(arrayOfTrees);
 }
 
 export async function removeTree(treeID) {
-  //REMEMBER TO HANDLE TREE ID RE-NUMBERING AFTER A PERSON GETS REMOVED
+  const arrayOfTrees = await readXML();
+  let index = 0;
+  for (const tree of arrayOfTrees) {
+    if (tree["@_id"] === String(treeID)) {
+      arrayOfTrees.splice(index, 1);
+      await writeXML(arrayOfTrees);
+    }
+    else {
+      index++;
+    }
+  }
 }
 
 export async function addPerson(personData, treeID) {
@@ -75,10 +86,40 @@ export async function addPerson(personData, treeID) {
 
 
 export async function editPerson(personID, treeID, changes) {
+  const arrayOfTrees = await readXML();
 
+  for (const tree of arrayOfTrees) {
+    if (tree["@_id"] === String(treeID)) {
+      let index = 0;
+      for (const person of tree.person) {
+        if (person["@_id"] === String(personID)) {
+          tree.person[index] = {...tree.person[index], ...changes};
+          await writeXML(arrayOfTrees);
+        }
+        else {
+          index++;
+        }
+      }
+    }
+  }
 }
 
 
 export async function removePerson(personID, treeID) {
-  //REMEMBER TO HANDLE PERSON ID RE-NUMBERING AFTER A PERSON GETS REMOVED
+  const arrayOfTrees = await readXML();
+
+  for (const tree of arrayOfTrees) {
+    if (tree["@_id"] === String(treeID)) {
+      let index = 0;
+      for (const person of tree.person) {
+        if (person["@_id"] === String(personID)) {
+          tree.person.splice(index, 1);
+          await writeXML(arrayOfTrees);
+        }
+        else {
+          index++;
+        }
+      }
+    }
+  }
 }
