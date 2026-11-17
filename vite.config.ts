@@ -10,4 +10,11 @@ export default defineConfig({
             include: '**/*.svg?react',
         })
     ],
+    server : {
+        host: true,
+        port: 5173,
+        watch: {
+            usePolling: true,
+        },
+    },
 });
