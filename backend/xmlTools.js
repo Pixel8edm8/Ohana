@@ -1,5 +1,5 @@
 import { readFile, writeFile } from "node:fs/promises";
-import { XMLBuilder, XMLParser } from "fast-xml-parser";
+import {XMLParser} from "fast-xml-parser";
 
 const file = new URL("Ohana.xml", import.meta.url);
 const options = {
