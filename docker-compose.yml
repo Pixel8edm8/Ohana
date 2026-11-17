@@ -11,3 +11,16 @@ services:
     env_file:
       - .env
     restart: unless-stopped
+  
+  ohana-dev:
+    image: ghcr.io/pixel8edm8/ohana:dev
+    build:
+      context: .
+    ports:
+      - "8080:80"
+    environment:
+      - NODE_ENV=development
+    env_file:
+      - .env
+    restart: unless-stopped
+  

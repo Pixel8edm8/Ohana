@@ -57,6 +57,7 @@
     "vite-plugin-checker": "^0.14.5",
     "vite-plugin-svgr": "^5.2.0",
     "vite-tsconfig-paths": "^6.1.1",
-    "xmlbuilder2": "^4.0.3"
+    "xmlbuilder2": "^4.0.3",
+    "serve": "^14.2.7"
   }
 }
