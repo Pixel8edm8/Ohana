@@ -47,7 +47,7 @@ export default function App() {
           <>
             <header className="navbar">
               <a href="#" className="logo">
-                <img src="/images/OhanaLogo.png" alt="Ohana Family Tree" />
+                <img src={import.meta.env.BASE_URL + "images/OhanaLogo.png"} alt="Ohana Family Tree" />
               </a>
               <span className="headerCaption">Simplicity.. Creativity...</span>
             </header>

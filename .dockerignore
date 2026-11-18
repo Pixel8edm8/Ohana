@@ -47,3 +47,5 @@ coverage/
 # Temporary files
 *.test.ts
 *.spec.ts
+
+Docker

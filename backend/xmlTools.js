@@ -1,55 +1,125 @@
-import { readFile, writeFile } from "node:fs/promises";
-import { XMLBuilder, XMLParser } from "fast-xml-parser";
+import {readFile, writeFile} from "node:fs/promises";
+import {XMLParser} from "fast-xml-parser";
+import XMLBuilder from "fast-xml-builder";
 
 const file = new URL("Ohana.xml", import.meta.url);
+
 const options = {
-  ignoreAttributes: false,
-  attributeNamePrefix: "@_",
-  parseTagValue: false,
-  isArray: (_name, path) => path === "families.family" || path === "families.family.person",
+  ignoreAttributes : false,
+  attributeNamePrefix : "@_",
+  parseTagValue : false,
+  format : true,
+  suppressBooleanAttributes : false,
+  isArray: (_name, path) => path === "families.tree" || path === "families.tree.person"
 };
+
+const rootAttributes = {
+  "@_xmlns:xsi":"http://www.w3.org/2001/XMLSchema-instance",
+  "@_xsi:noNamespaceSchemaLocation":"OhanaXSD.xsd"
+};
+
 const parser = new XMLParser(options);
-const builder = new XMLBuilder({ ...options, format: true });
+const builder = new XMLBuilder(options);
 
-
-export async function loadFamily() {
-  const { families } = parser.parse(await readFile(file, "utf8"));
-  return (families?.family ?? []).flatMap((fam) =>
-    (fam.person ?? []).map(({ "@_id": id, ...fields }) => ({
-      id,
-      familyId: fam["@_id"],
-      ...fields,
-    }))
-  );
+export async function readXML() {
+  const read_xml = await readFile(file, "utf8");
+  const parse_xml = parser.parse(read_xml);
+  return parse_xml.families.tree ?? [];
 }
 
-async function saveFamily(people) {
-  const byFamily = new Map();
-  for (const { id, familyId = "1", ...fields } of people) {
-    if (!byFamily.has(familyId)) byFamily.set(familyId, []);
-    byFamily.get(familyId).push({ "@_id": String(id), ...fields });
+async function writeXML(people) {
+  const buildXML = builder.build({families : {...rootAttributes, tree : people}});
+  await writeFile(file, buildXML);
+}
+
+export async function addTree() {
+  const arrayOfTrees = await readXML();
+
+  let highestID = 1;
+
+  for (const tree of arrayOfTrees) {
+    highestID++;
   }
-  const family = [...byFamily].map(([fid, person]) => ({ "@_id": fid, person }));
-  await writeFile(file, builder.build({ families: { family } }));
-  return people;
+  const newTreeID = String(highestID);
+
+  arrayOfTrees.push({"@_id" : newTreeID});
+  await writeXML(arrayOfTrees);
 }
 
-export async function addPerson(person) {
-  const people = await loadFamily();
-  const nextId = Math.max(0, ...people.map((p) => Number(p.id) || 0)) + 1;
-  people.push({ ...person, id: person.id ?? String(nextId) });
-  return saveFamily(people);
+export async function removeTree(treeID) {
+  const arrayOfTrees = await readXML();
+  let index = 0;
+  for (const tree of arrayOfTrees) {
+    if (tree["@_id"] === String(treeID)) {
+      arrayOfTrees.splice(index, 1);
+      await writeXML(arrayOfTrees);
+    }
+    else {
+      index++;
+    }
+  }
 }
 
-export async function editPerson(id, changes) {
-  const people = await loadFamily();
-  const person = people.find((p) => p.id === String(id));
-  if (!person) throw new Error(`No person with id ${id}`);
-  Object.assign(person, changes);
-  return saveFamily(people);
+export async function addPerson(personData, treeID) {
+  const arrayOfTrees = await readXML();
+
+  for (const tree of arrayOfTrees) {
+    if (tree["@_id"] === String(treeID)) {
+      let highestID = 0;
+      if (tree.person === undefined) {
+        highestID = "1";
+        tree.person = [];
+        tree.person.push({...personData, "@_id" : highestID});
+        await writeXML(arrayOfTrees);
+      }
+      else {
+        for (const person of tree.person) {
+          highestID++;
+        }
+        const newPersonID = String(highestID + 1);
+        tree.person.push({...personData, "@_id" : newPersonID});
+        await writeXML(arrayOfTrees);
+      }
+    }
+  }
 }
 
-export async function removePerson(id) {
-  const people = await loadFamily();
-  return saveFamily(people.filter((p) => p.id !== String(id)));
+
+export async function editPerson(personID, treeID, changes) {
+  const arrayOfTrees = await readXML();
+
+  for (const tree of arrayOfTrees) {
+    if (tree["@_id"] === String(treeID)) {
+      let index = 0;
+      for (const person of tree.person) {
+        if (person["@_id"] === String(personID)) {
+          tree.person[index] = {...tree.person[index], ...changes};
+          await writeXML(arrayOfTrees);
+        }
+        else {
+          index++;
+        }
+      }
+    }
+  }
+}
+
+
+export async function removePerson(personID, treeID) {
+  const arrayOfTrees = await readXML();
+
+  for (const tree of arrayOfTrees) {
+    if (tree["@_id"] === String(treeID)) {
+      let index = 0;
+      for (const person of tree.person) {
+        if (person["@_id"] === String(personID)) {
+          tree.person.splice(index, 1);
+          await writeXML(arrayOfTrees);
+        }
+        else {
+          index++;
+        }
+      }
+    }
+  }
 }

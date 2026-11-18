@@ -1,21 +1,20 @@
 import { useEffect, useMemo, useState, type FormEvent } from 'react'
 import {
   ArrowRight, BookOpen, Check, ChevronDown,
-  GitBranch,Link2, Plus, Search, Trash2,
+  GitBranch, Link2, Plus, Search, Trash2,
   Users, UserRound, X,
 } from 'lucide-react'
-import { create } from 'xmlbuilder2';
-import { sendToBackend } from '../api.ts';
-
+import XMLBuilder from 'fast-xml-builder'
+import { sendToBackend } from '../api.ts'
 
 type RelationKind =
   | 'Parent' | 'Child' | 'Sibling' | 'Spouse / partner'
   | 'Grandparent' | 'Grandchild' | 'Aunt / uncle' | 'Niece / nephew'
-  | 'Cousin' | 'Guardian' | 'Ward / dependent' 
+  | 'Cousin' | 'Guardian' | 'Ward / dependent'
 
 type RelationType =
   | 'Biological' | 'Adoptive' | 'Step' | 'Foster'
-  | 'Legal guardian' | 'Chosen family' | 'In-law' 
+  | 'Legal guardian' | 'Chosen family' | 'In-law'
 
 type Member = {
   id: string
@@ -48,6 +47,18 @@ type RelationshipDraft = {
 
 const MEMBER_KEY = 'ohana-family-members-v1'
 const RELATION_KEY = 'ohana-family-relationships-v1'
+
+const xmlBuilder = new XMLBuilder({
+  format: true,
+  ignoreAttributes: false,
+})
+
+function buildXmlPayload(data: Record<string, unknown>): string {
+  return xmlBuilder.build({
+    '?xml': { '@_version': '1.0', '@_encoding': 'UTF-8' },
+    ...data,
+  })
+}
 
 const relationKinds: RelationKind[] = [
   'Parent', 'Child', 'Sibling', 'Spouse / partner', 'Grandparent', 'Grandchild',
@@ -119,7 +130,7 @@ function InputUI() {
   const [showAll, setShowAll] = useState(false)
   const [notice, setNotice] = useState('')
 
-  //Saving members and relationships to local browser storage just in case backend
+  // Saving members and relationships to local browser storage just in case backend
   // server doesn't necessarily save the data
   useEffect(() => {
     localStorage.setItem(MEMBER_KEY, JSON.stringify(members))
@@ -203,19 +214,27 @@ function InputUI() {
       })
     })
 
-    //-----------------------------------------------------------------
-    const jsonData = {
-        newMember: newMember,
-    };
-    const xmlString = create(jsonData).end({ prettyPrint: true });
-    sendToBackend(xmlString);
-    //-----------------------------------------------------------------
+    const xmlString = buildXmlPayload({
+      newMember,
+      relationships: nextRelationships.length > 0 ? { relationship: nextRelationships } : undefined,
+    })
+    sendToBackend(xmlString)
 
     setMembers((current) => [newMember, ...current])
     setRelationships((current) => [...current, ...nextRelationships])
     resetForm()
     setNotice(`${fullName(newMember)} was added to your family.`)
     window.setTimeout(() => setNotice(''), 4500)
+  }
+
+  function handleSaveAll() {
+    const xmlString = buildXmlPayload({
+      familyTree: {
+        members: { member: members },
+        relationships: { relationship: relationships },
+      },
+    })
+    sendToBackend(xmlString)
   }
 
   function deleteMember(memberId: string) {
@@ -232,13 +251,13 @@ function InputUI() {
       .filter((relationship) => relationship.fromId === memberId)
       .map((relationship) => ({ ...relationship, person: memberById.get(relationship.toId) }))
       .filter((relationship) => relationship.person)
-      }
+  }
 
   return (
     <div className="app-shell">
       <header className="topbar">
         <a className="brand" href="#top" aria-label="Ohana home">
-          <img src="/images/OhanaLogo.png" alt="Ohana" />
+          <img src={import.meta.env.BASE_URL + "images/OhanaLogo.png"} alt="Ohana" />
         </a>
         <div className="topbar-right">
           <div className="avatar avatar-user">Y</div>
@@ -386,7 +405,6 @@ function InputUI() {
                 <div className="stats-bar"><span style={{ width: `${members.length ? (livingCount / members.length) * 100 : 0}%` }} /></div>
                 <div className="stats-legend"><span> Living <b>{livingCount}</b></span><span> Deceased <b>{deceasedCount}</b></span></div>
               </section>
-
             </aside>
           </div>
 
@@ -394,15 +412,15 @@ function InputUI() {
             <div className="directory-heading">
               <div><div className="eyebrow"></div><h2>Family directory</h2></div>
               <div className="footer-actions">
-            <div className="directory-count">{members.length} {members.length === 1 ? 'person' : 'people'}</div>
-            </div>
-            <button
-              type="button"
-              className="button-primary"
-              onClick={sendToBackend}
-            >
-              Save your changes
-            </button>
+                <div className="directory-count">{members.length} {members.length === 1 ? 'person' : 'people'}</div>
+              </div>
+              <button
+                type="button"
+                className="button-primary"
+                onClick={handleSaveAll}
+              >
+                Save your changes
+              </button>
             </div>
             <div className="directory-toolbar">
               <div className="search-box"><Search size={16} /><input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search family members" /></div>
@@ -437,10 +455,10 @@ function InputUI() {
               )
             )}
           </section>
-
         </main>
       </div>
     </div>
   )
 }
+
 export default InputUI
