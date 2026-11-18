@@ -46,6 +46,7 @@ jobs:
           
           # Build the Docker image (Removed --target production)
           docker build \
+            -f ./docker/DockerFile \
             -t $IMAGE_NAME:${GITHUB_SHA:-latest} \
             -t $IMAGE_NAME:latest \
             --progress=plain \

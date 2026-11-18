@@ -1,13 +1,13 @@
 import express from "express";
 import cors from "cors";
-import { loadFamily, addPerson, editPerson, removePerson } from "./xmlTools.js";
+import {readXML, writeXML, addTree, removeTree, addPerson, editPerson, removePerson} from "./xmlTools.js";
 
 const app = express();
 app.use(cors());          // frontend can use this
 app.use(express.json());  
 
 app.get("/api/people", async (_req, res) => {
-  res.json(await loadFamily());
+  res.json(await readXML());
 });
 
 app.post("/api/people", async (req, res) => {
