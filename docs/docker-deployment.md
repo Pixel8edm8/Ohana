@@ -37,3 +37,9 @@ The dev container has the following benefits:
 - The code is easy to read with DevTools.
 
 **DO NOT USE THIS CONTAINER FOR DEPLOYMENT.**
+
+Note: If you are actively developing the Docker tools or the server configuration (default.config) for production, you should use 
+```sh
+docker compose up -d --build ohana-app
+```
+instead, so that it rebuilds the docker container, and you see changes again.

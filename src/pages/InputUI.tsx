@@ -4,7 +4,7 @@ import {
   GitBranch, Link2, Plus, Search, Trash2,
   Users, UserRound, X,
 } from 'lucide-react'
-import { XMLBuilder } from 'fast-xml-parser'
+import XMLBuilder from 'fast-xml-builder'
 import { sendToBackend } from '../api.ts'
 
 type RelationKind =
@@ -47,6 +47,18 @@ type RelationshipDraft = {
 
 const MEMBER_KEY = 'ohana-family-members-v1'
 const RELATION_KEY = 'ohana-family-relationships-v1'
+
+const xmlBuilder = new XMLBuilder({
+  format: true,
+  ignoreAttributes: false,
+})
+
+function buildXmlPayload(data: Record<string, unknown>): string {
+  return xmlBuilder.build({
+    '?xml': { '@_version': '1.0', '@_encoding': 'UTF-8' },
+    ...data,
+  })
+}
 
 const relationKinds: RelationKind[] = [
   'Parent', 'Child', 'Sibling', 'Spouse / partner', 'Grandparent', 'Grandchild',
@@ -202,11 +214,11 @@ function InputUI() {
       })
     })
 
-    // -----------------------------------------------------------------
-    const builder = new XMLBuilder({ format: true })
-    const xmlString = builder.build({ newMember })
+    const xmlString = buildXmlPayload({
+      newMember,
+      relationships: nextRelationships.length > 0 ? { relationship: nextRelationships } : undefined,
+    })
     sendToBackend(xmlString)
-    // -----------------------------------------------------------------
 
     setMembers((current) => [newMember, ...current])
     setRelationships((current) => [...current, ...nextRelationships])
@@ -216,8 +228,7 @@ function InputUI() {
   }
 
   function handleSaveAll() {
-    const builder = new XMLBuilder({ format: true })
-    const xmlString = builder.build({
+    const xmlString = buildXmlPayload({
       familyTree: {
         members: { member: members },
         relationships: { relationship: relationships },
