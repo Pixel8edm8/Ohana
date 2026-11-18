@@ -257,7 +257,7 @@ function InputUI() {
     <div className="app-shell">
       <header className="topbar">
         <a className="brand" href="#top" aria-label="Ohana home">
-          <img src={import.meta.env.BASE_URL + {import.meta.env.BASE_URL + "images/OhanaLogo.png"}} alt="Ohana" />
+          <img src={import.meta.env.BASE_URL + "images/OhanaLogo.png"} alt="Ohana" />
         </a>
         <div className="topbar-right">
           <div className="avatar avatar-user">Y</div>
