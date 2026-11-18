@@ -204,9 +204,10 @@ function InputUI() {
     })
 
     //-----------------------------------------------------------------
-    const jsonData = {
-        newMember: newMember,
-    };
+   const jsonData = {
+    newMember,
+    relationships: nextRelationships,
+};
     const xmlString = create(jsonData).end({ prettyPrint: true });
     sendToBackend(xmlString);
     //-----------------------------------------------------------------
