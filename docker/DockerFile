@@ -17,6 +17,4 @@ COPY --from=builder /app/dist /usr/share/nginx/html
 COPY inject-vars.sh /docker-entrypoint.d/99-inject-vars.sh
 RUN chmod +x /docker-entrypoint.d/99-inject-vars.sh
 
-EXPOSE 80
 EXPOSE 8080
-EXPOSE 443
