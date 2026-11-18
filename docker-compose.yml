@@ -4,10 +4,29 @@ services:
     image: ghcr.io/pixel8edm8/ohana:latest
     build:
       context: .
+      dockerfile: ./docker/DockerFile
     ports:
-      - "8080:80" 
+      - "8080:443"
     environment:
       - NODE_ENV=production
     env_file:
       - .env
     restart: unless-stopped
+  
+  ohana-dev:
+    image: ghcr.io/pixel8edm8/ohana:dev
+    build:
+      context: .
+      dockerfile: ./docker/DockerFile.dev
+    ports:
+      - "3000:3000"
+    volumes: 
+      - .:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+      - CHOKIDAR_USEPOLLING=true
+    env_file:
+      - .env
+    restart: unless-stopped
+  
