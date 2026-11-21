@@ -1,16 +1,22 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
+import { BrowserRouter, Routes, Route, useNavigate } from "react-router-dom";
+import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google";
+import InputUI from "./pages/InputUI"; // adjust path if needed
 import "./styles/style.css";
-import { GoogleLogin } from "@react-oauth/google";
-import { Route, Routes, useNavigate } from "react-router-dom";
-import InputUI from "./pages/InputUI";
-// TODO: Replace the house and the plus sign with FontAwesome icons, so that they can be responsively scaled.
-// import { } from 'react-fontawesome';
-export default function App() {
+
+const runtimeClientId = window.__ENV__?.VITE_GOOGLE_CLIENT_ID;
+const GOOGLE_CLIENT_ID =
+  runtimeClientId && runtimeClientId !== "__VITE_GOOGLE_CLIENT_ID__"
+    ? runtimeClientId
+    : import.meta.env.VITE_GOOGLE_CLIENT_ID || "";
+
+function AppRoutes() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedAction, setSelectedAction] = useState<
     "create" | "open" | null
   >(null);
   const navigate = useNavigate();
+
   const openLogin = (action: "create" | "open") => {
     setSelectedAction(action);
     setIsModalOpen(true);
@@ -47,7 +53,10 @@ export default function App() {
           <>
             <header className="navbar">
               <a href="#" className="logo">
-                <img src={import.meta.env.BASE_URL + "images/OhanaLogo.png"} alt="Ohana Family Tree" />
+                <img
+                  src={import.meta.env.BASE_URL + "images/OhanaLogo.png"}
+                  alt="Ohana Family Tree"
+                />
               </a>
               <span className="headerCaption">Simplicity.. Creativity...</span>
             </header>
@@ -124,26 +133,37 @@ export default function App() {
                       ? "Sign in to start."
                       : "Sign in to access your existing family trees."}
                   </p>
-                  <div className="">
+                  <div>
                     <GoogleLogin
                       onSuccess={(credentialSuccess) => {
                         console.log("Credential Success!");
                         console.log(credentialSuccess.clientId);
+                        closeLogin();
                         navigate("/input");
                       }}
                       onError={() => {
                         console.error("OAuth Credential was not accepted.");
                       }}
-                    ></GoogleLogin>
+                    />
                   </div>
                 </div>
               </div>
             )}
           </>
         }
-      ></Route>
+      />
       {/* TODO: Fix this later so that we can give links for different trees. */}
-      <Route path="/input" element={<InputUI />}></Route>
+      <Route path="/input" element={<InputUI />} />
     </Routes>
+  );
+}
+
+export default function App() {
+  return (
+    <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
+      <BrowserRouter basename={import.meta.env.BASE_URL}>
+        <AppRoutes />
+      </BrowserRouter>
+    </GoogleOAuthProvider>
   );
 }
