@@ -4,7 +4,8 @@ export default function Template() {
         <a href="#" className="logo">
           <img src={import.meta.env.BASE_URL + "images/OhanaLogo.png"} alt="Ohana Family Tree" />
         </a>
-        <span className="headerCaption">Simplicity..  Creativity...</span>
+        {/* TODO: Pretty please change this slogan! */}
+        <span className="headerCaption">Simplicity. Creativity.</span>
     </header>
     );   
 }
