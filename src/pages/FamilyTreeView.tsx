@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState, useMemo } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import {
   ReactFlow,
   Background,
@@ -213,15 +213,16 @@ export function FamilyTreeView({
   const [treeLink, setTreeLink] = useState('')
   const [linkCopied, setLinkCopied] = useState(false)
   const handleCreateLink = async () => {
-  const link = `${window.location.origin}/tree/${encodeURIComponent(treeId)}`
-  setTreeLink(link)
-  try {
-    await navigator.clipboard.writeText(link)
-    setLinkCopied(true)
-  } catch {
-    setLinkCopied(false)
+    const link = `${window.location.origin}/tree/${encodeURIComponent(treeId)}`
+    setTreeLink(link)
+
+    try {
+      await navigator.clipboard.writeText(link)
+      setLinkCopied(true)
+    } catch {
+      setLinkCopied(false)
+    }
   }
-}
 
   const { initialNodes, initialEdges } = useMemo(
     () => buildGraphElements(members, relationships),
@@ -261,51 +262,54 @@ export function FamilyTreeView({
   }
 
   return (
-    <div style={{ width: '100%', height: 600, border: '1px solid #e2e8f0', borderRadius: 12, overflow: 'hidden' }}>
-       <div style={{ marginBottom: 12 }}>
-  <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-    <button
-      onClick={handleCreateLink}
-      style={{
-        padding: '9px 18px',
-        backgroundColor: '#ffffff',
-        border: '1px solid #cbd5e1',
-        borderRadius: 8,
-        color: '#334155',
-        fontSize: 14,
-        fontWeight: 600,
-        cursor: 'pointer',
-      }}
-    >
-      {linkCopied ? 'Copied!' : 'Create Link'}
-    </button>
-  </div>
+    <div style={{ width: '100%' }}>
+      <div style={{ marginBottom: 12 }}>
+        <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+          <button
+            type="button"
+            onClick={handleCreateLink}
+            style={{
+              padding: '9px 18px',
+              backgroundColor: '#ffffff',
+              border: '1px solid #cbd5e1',
+              borderRadius: 8,
+              color: '#334155',
+              fontSize: 14,
+              fontWeight: 600,
+              cursor: 'pointer',
+            }}
+          >
+            {linkCopied ? 'Copied!' : 'Create Link'}
+          </button>
+        </div>
 
-  {treeLink && (
-    <div style={{ marginTop: 10 }}>
-      <input
-        type="text"
-        value={treeLink}
-        readOnly
-        onClick={(e) => e.currentTarget.select()}
-        style={{
-          width: '100%',
-          padding: 10,
-          border: '1px solid #cbd5e1',
-          borderRadius: 8,
-          fontSize: 13,
-        }}
-      />
+        {treeLink && (
+          <div style={{ marginTop: 10 }}>
+            <input
+              type="text"
+              value={treeLink}
+              readOnly
+              onClick={(event) => event.currentTarget.select()}
+              style={{
+                width: '100%',
+                padding: 10,
+                border: '1px solid #cbd5e1',
+                borderRadius: 8,
+                fontSize: 13,
+              }}
+            />
 
-      <small style={{ color: '#64748b' }}>
-        {linkCopied
-          ? 'Link copied to clipboard!'
-          : 'Select and copy the link above.'}
-      </small>
-    </div>
-  )}
-</div>
-      <ReactFlow
+            <small style={{ color: '#64748b' }}>
+              {linkCopied
+                ? 'Link copied to clipboard!'
+                : 'Select and copy the link above.'}
+            </small>
+          </div>
+        )}
+      </div>
+
+      <div style={{ width: '100%', height: 600, border: '1px solid #e2e8f0', borderRadius: 12, overflow: 'hidden' }}>
+        <ReactFlow
         nodes={nodes}
         edges={edges}
         nodeTypes={nodeTypes}
@@ -319,7 +323,8 @@ export function FamilyTreeView({
         <Background gap={16} color="#e2e8f0" />
         <Controls />
         <MiniMap zoomable pannable />
-      </ReactFlow>
+        </ReactFlow>
+      </div>
     </div>
   )
 }

@@ -626,7 +626,7 @@ function InputUI() {
           <section className="tree-section">
             <h2>Family Tree</h2>
             <p style={{ fontSize: 13, color: '#64748b', marginBottom: 12 }}>
-              Drag from one person&apos;s handle to another to define a relationship between them.
+              Drag from one persons handle to another to define a relationship between them.
             </p>
              <FamilyTreeView
                members={members}
