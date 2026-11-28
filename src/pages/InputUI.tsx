@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type FormEvent } from 'react'
+import { useEffect, useMemo, useRef, useState, type FormEvent } from 'react'
 import {
   ArrowRight, BookOpen, Check, ChevronDown,
   GitBranch, Link2, Plus, Search, Trash2,
@@ -6,37 +6,8 @@ import {
 } from 'lucide-react'
 import XMLBuilder from 'fast-xml-builder'
 import { sendToBackend } from '../api.ts'
-
-type RelationKind =
-  | 'Parent' | 'Child' | 'Sibling' | 'Spouse / partner'
-  | 'Grandparent' | 'Grandchild' | 'Aunt / uncle' | 'Niece / nephew'
-  | 'Cousin' | 'Guardian' | 'Ward / dependent'
-
-type RelationType =
-  | 'Biological' | 'Adoptive' | 'Step' | 'Foster'
-  | 'Legal guardian' | 'Chosen family' | 'In-law'
-
-type Member = {
-  id: string
-  firstName: string
-  lastName: string
-  preferredName: string
-  pronouns: string
-  birthDate: string
-  deathDate: string
-  isLiving: boolean
-  notes: string
-  createdAt: string
-}
-
-type Relationship = {
-  id: string
-  fromId: string
-  toId: string
-  kind: RelationKind
-  type: RelationType
-  notes: string
-}
+import { FamilyTreeView } from './FamilyTreeView'
+import type { Member, Relationship, RelationKind, RelationType } from '../types/family'
 
 type RelationshipDraft = {
   id: string
@@ -114,6 +85,23 @@ function formatDate(value: string) {
 function InputUI() {
   const [members, setMembers] = useState<Member[]>(() => readStored(MEMBER_KEY, []))
   const [relationships, setRelationships] = useState<Relationship[]>(() => readStored(RELATION_KEY, []))
+  const [formMode, setFormMode] = useState<'add' | 'connect'>('add')
+  const [connectFromId, setConnectFromId] = useState('')
+  const [connectToId, setConnectToId] = useState('')
+  const [connectKind, setConnectKind] = useState<RelationKind | ''>('')
+  const [connectType, setConnectType] = useState<RelationType>('Biological')
+  const connectKindSelectRef = useRef<HTMLSelectElement | null>(null)
+  const [treeId] = useState(() => {
+    const savedId = localStorage.getItem('ohana-family-tree-id-v1')
+
+    if (savedId) return savedId
+
+    const newId = makeId()
+    localStorage.setItem('ohana-family-tree-id-v1', newId)
+
+    return newId
+  })
+
   const [firstName, setFirstName] = useState('')
   const [lastName, setLastName] = useState('')
   const [preferredName, setPreferredName] = useState('')
@@ -130,8 +118,6 @@ function InputUI() {
   const [showAll, setShowAll] = useState(false)
   const [notice, setNotice] = useState('')
 
-  // Saving members and relationships to local browser storage just in case backend
-  // server doesn't necessarily save the data
   useEffect(() => {
     localStorage.setItem(MEMBER_KEY, JSON.stringify(members))
   }, [members])
@@ -179,6 +165,60 @@ function InputUI() {
     setDeathDate('')
     setNotes('')
     setLinks([{ id: makeId(), personId: '', kind: '', type: 'Biological' }])
+  }
+
+  // Triggered when dragging a connection between two nodes in FamilyTreeView
+  function handleTreeConnect(sourceId: string, targetId: string) {
+    setFormMode('connect')
+    setConnectFromId(sourceId)
+    setConnectToId(targetId)
+    setConnectKind('')
+    setConnectType('Biological')
+
+    document.getElementById('member-form-card')?.scrollIntoView({ behavior: 'smooth' })
+    window.setTimeout(() => {
+      connectKindSelectRef.current?.focus()
+    }, 350)
+  }
+
+  function handleConnectSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+    if (!connectFromId || !connectToId || !connectKind || connectFromId === connectToId) return
+
+    const fromMember = memberById.get(connectFromId)
+    const toMember = memberById.get(connectToId)
+    if (!fromMember || !toMember) return
+
+    const kind = connectKind as RelationKind
+    const nextRelationships: Relationship[] = [
+      {
+        id: makeId(),
+        fromId: connectFromId,
+        toId: connectToId,
+        kind,
+        type: connectType,
+        notes: '',
+      },
+      {
+        id: makeId(),
+        fromId: connectToId,
+        toId: connectFromId,
+        kind: inverseKind[kind],
+        type: connectType,
+        notes: '',
+      },
+    ]
+
+    const xmlString = buildXmlPayload({
+      relationships: { relationship: nextRelationships },
+    })
+    sendToBackend(xmlString)
+
+    setRelationships((current) => [...current, ...nextRelationships])
+    setConnectKind('')
+    setFormMode('add')
+    setNotice(`Connected ${fullName(fromMember)} and ${fullName(toMember)}.`)
+    window.setTimeout(() => setNotice(''), 4500)
   }
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -253,6 +293,9 @@ function InputUI() {
       .filter((relationship) => relationship.person)
   }
 
+  const fromPerson = memberById.get(connectFromId)
+  const toPerson = memberById.get(connectToId)
+
   return (
     <div className="app-shell">
       <header className="topbar">
@@ -267,8 +310,21 @@ function InputUI() {
       <div className="page-layout" id="top">
         <aside className="sidebar">
           <div className="side-section-label">WORKSPACE</div>
-          <button className="side-link active" type="button"><Users size={17} /> Family members</button>
-          <button className="side-link" type="button" onClick={() => document.getElementById('relationship-section')?.scrollIntoView({ behavior: 'smooth' })}>
+          <button
+            className={`side-link ${formMode === 'add' ? 'active' : ''}`}
+            type="button"
+            onClick={() => setFormMode('add')}
+          >
+            <Users size={17} /> Family members
+          </button>
+          <button
+            className={`side-link ${formMode === 'connect' ? 'active' : ''}`}
+            type="button"
+            onClick={() => {
+              if (members.length >= 2) setFormMode('connect')
+              document.getElementById('member-form-card')?.scrollIntoView({ behavior: 'smooth' })
+            }}
+          >
             <GitBranch size={17} /> Relationships
           </button>
           <button className="side-link" type="button" onClick={() => document.getElementById('member-list')?.scrollIntoView({ behavior: 'smooth' })}>
@@ -297,106 +353,218 @@ function InputUI() {
           {notice && <div className="success-banner" role="status"><Check size={17} /> {notice}<button type="button" onClick={() => setNotice('')} aria-label="Dismiss"><X size={15} /></button></div>}
 
           <div className="content-grid">
-            <section className="form-card">
+            <section className="form-card" id="member-form-card">
               <div className="card-heading">
                 <div>
-                  <h2>Add a family member</h2>
+                  <h2>{formMode === 'connect' ? 'Connect existing family members' : 'Add a family member'}</h2>
                 </div>
-              </div>
-
-              <form onSubmit={handleSubmit}>
-                <div className="section-kicker"><span>PERSONAL DETAILS</span><i /></div>
-                <div className="form-grid two-columns">
-                  <label className="field">
-                    <span>First name <b>*</b></span>
-                    <input value={firstName} onChange={(event) => setFirstName(event.target.value)} placeholder="Tom" required />
-                  </label>
-                  <label className="field">
-                    <span>Last name <b>*</b></span>
-                    <input value={lastName} onChange={(event) => setLastName(event.target.value)} placeholder="Cruise" required />
-                  </label>
-                  <label className="field">
-                    <span>Preferred name <small>Optional</small></span>
-                    <input value={preferredName} onChange={(event) => setPreferredName(event.target.value)} />
-                  </label>
-                  <label className="field">
-                    <span>Pronouns <small>Optional</small></span>
-                    <input value={pronouns} onChange={(event) => setPronouns(event.target.value)} placeholder=" he / him" />
-                  </label>
-                  <label className="field">
-                    <span>Date of birth <small>Optional</small></span>
-                    <input type="date" value={birthDate} onChange={(event) => setBirthDate(event.target.value)} />
-                  </label>
-                  <div className="field living-field">
-                    <span>Living status</span>
-                    <div className="living-toggle" role="group" aria-label="Living status">
-                      <button className={isLiving ? 'selected' : ''} type="button" onClick={() => setIsLiving(true)}>Living</button>
-                      <button className={!isLiving ? 'selected' : ''} type="button" onClick={() => setIsLiving(false)}>Passed away</button>
-                    </div>
-                  </div>
-                  {!isLiving && (
-                    <label className="field">
-                      <span>Date of passing <small>Optional</small></span>
-                      <input type="date" value={deathDate} onChange={(event) => setDeathDate(event.target.value)} />
-                    </label>
-                  )}
-                </div>
-
-                <div className="section-kicker relationship-kicker" id="relationship-section"><span>FAMILY CONNECTIONS</span><i /></div>
-                {members.length === 0 ? (
-                  <div className="empty-connect"><UserRound size={18} /><span>Add your first person to start. </span></div>
-                ) : (
-                  <div className="relationship-rows">
-                    {links.map((link, index) => (
-                      <div className="relationship-row" key={link.id}>
-                        <div className="relationship-row-top"><span>CONNECTION {String(index + 1).padStart(2, '0')}</span>
-                          {links.length > 1 && <button className="icon-button remove-link" type="button" onClick={() => removeLinkRow(link.id)} aria-label="Remove connection"><X size={15} /></button>}
-                        </div>
-                        <div className="form-grid relation-grid">
-                          <label className="field">
-                            <span>Person in your tree</span>
-                            <div className="select-wrap"><select value={link.personId} onChange={(event) => updateLink(link.id, 'personId', event.target.value)}>
-                              <option value="">Select a person</option>
-                              {members.map((member) => <option value={member.id} key={member.id}>{fullName(member)}</option>)}
-                            </select><ChevronDown size={15} /></div>
-                          </label>
-                          <label className="field">
-                            <span>New person&apos;s relationship</span>
-                            <div className="select-wrap"><select value={link.kind} onChange={(event) => updateLink(link.id, 'kind', event.target.value)}>
-                              <option value="">Select relationship</option>
-                              {relationKinds.map((kind) => <option value={kind} key={kind}>{kind}</option>)}
-                            </select><ChevronDown size={15} /></div>
-                          </label>
-                          <label className="field relation-type-field">
-                            <span>Connection type</span>
-                            <div className="select-wrap"><select value={link.type} onChange={(event) => updateLink(link.id, 'type', event.target.value)}>
-                              {relationTypes.map((type) => <option value={type} key={type}>{type}</option>)}
-                            </select><ChevronDown size={15} /></div>
-                          </label>
-                        </div>
-                        {link.kind && link.personId && (
-                          <div className="relationship-preview"><Link2 size={14} /> {firstName.trim() || 'This person'} is <b>{link.kind.toLowerCase()}</b> of {memberById.get(link.personId) ? fullName(memberById.get(link.personId)!) : 'the selected person'} <span>· {link.type}</span></div>
-                        )}
-                      </div>
-                    ))}
-                    <button type="button" className="add-connection" onClick={addLinkRow}><Plus size={15} /> Add another connection</button>
+                {members.length >= 2 && (
+                  <div className="living-toggle" role="group" aria-label="Form mode">
+                    <button
+                      type="button"
+                      className={formMode === 'add' ? 'selected' : ''}
+                      onClick={() => setFormMode('add')}
+                    >
+                      New person
+                    </button>
+                    <button
+                      type="button"
+                      className={formMode === 'connect' ? 'selected' : ''}
+                      onClick={() => setFormMode('connect')}
+                    >
+                      Link existing
+                    </button>
                   </div>
                 )}
+              </div>
 
-                <div className="section-kicker notes-kicker"><span>NOTES</span><i /></div>
-                <label className="field notes-field">
-                  <span><small>Optional</small></span>
-                  <textarea value={notes} onChange={(event) => setNotes(event.target.value)} placeholder="A memoir" rows={3} />
-                </label>
+              {formMode === 'connect' ? (
+                <form onSubmit={handleConnectSubmit}>
+                  <div className="section-kicker"><span>SELECTED PEOPLE FROM TREE</span><i /></div>
+                  <div className="form-grid relation-grid">
+                    <label className="field">
+                      <span>First person <b>*</b></span>
+                      <div className="select-wrap">
+                        <select
+                          value={connectFromId}
+                          onChange={(e) => setConnectFromId(e.target.value)}
+                          required
+                        >
+                          <option value="">Select a person</option>
+                          {members.map((member) => (
+                            <option value={member.id} key={member.id}>{fullName(member)}</option>
+                          ))}
+                        </select>
+                        <ChevronDown size={15} />
+                      </div>
+                    </label>
 
-                <div className="form-footer">
-                  <span><b>*</b> Required fields</span>
-                  <div className="footer-actions">
-                    <button type="button" className="button-quiet" onClick={resetForm}>Clear form</button>
-                    <button type="submit" className="button-primary">Add family member <ArrowRight size={16} /></button>
+                    <label className="field">
+                      <span>Relationship <b>*</b></span>
+                      <div className="select-wrap">
+                        <select
+                          ref={connectKindSelectRef}
+                          value={connectKind}
+                          onChange={(e) => setConnectKind(e.target.value as RelationKind)}
+                          required
+                        >
+                          <option value="">Select relationship</option>
+                          {relationKinds.map((kind) => (
+                            <option value={kind} key={kind}>{kind}</option>
+                          ))}
+                        </select>
+                        <ChevronDown size={15} />
+                      </div>
+                    </label>
+
+                    <label className="field">
+                      <span>Second person <b>*</b></span>
+                      <div className="select-wrap">
+                        <select
+                          value={connectToId}
+                          onChange={(e) => setConnectToId(e.target.value)}
+                          required
+                        >
+                          <option value="">Select a person</option>
+                          {members
+                            .filter((m) => m.id !== connectFromId)
+                            .map((member) => (
+                              <option value={member.id} key={member.id}>{fullName(member)}</option>
+                            ))}
+                        </select>
+                        <ChevronDown size={15} />
+                      </div>
+                    </label>
+
+                    <label className="field relation-type-field">
+                      <span>Connection type</span>
+                      <div className="select-wrap">
+                        <select
+                          value={connectType}
+                          onChange={(e) => setConnectType(e.target.value as RelationType)}
+                        >
+                          {relationTypes.map((type) => (
+                            <option value={type} key={type}>{type}</option>
+                          ))}
+                        </select>
+                        <ChevronDown size={15} />
+                      </div>
+                    </label>
                   </div>
-                </div>
-              </form>
+
+                  {fromPerson && toPerson && connectKind && (
+                    <div className="relationship-preview">
+                      <Link2 size={14} /> {fullName(fromPerson)} is <b>{connectKind.toLowerCase()}</b> of {fullName(toPerson)} <span>· {connectType}</span>
+                    </div>
+                  )}
+
+                  <div className="form-footer">
+                    <span><b>*</b> Required fields</span>
+                    <div className="footer-actions">
+                      <button type="button" className="button-quiet" onClick={() => setFormMode('add')}>
+                        Cancel
+                      </button>
+                      <button type="submit" className="button-primary">
+                        Save connection <ArrowRight size={16} />
+                      </button>
+                    </div>
+                  </div>
+                </form>
+              ) : (
+                <form onSubmit={handleSubmit}>
+                  <div className="section-kicker"><span>PERSONAL DETAILS</span><i /></div>
+                  <div className="form-grid two-columns">
+                    <label className="field">
+                      <span>First name <b>*</b></span>
+                      <input value={firstName} onChange={(event) => setFirstName(event.target.value)} placeholder="Tom" required />
+                    </label>
+                    <label className="field">
+                      <span>Last name <b>*</b></span>
+                      <input value={lastName} onChange={(event) => setLastName(event.target.value)} placeholder="Cruise" required />
+                    </label>
+                    <label className="field">
+                      <span>Preferred name <small>Optional</small></span>
+                      <input value={preferredName} onChange={(event) => setPreferredName(event.target.value)} />
+                    </label>
+                    <label className="field">
+                      <span>Pronouns <small>Optional</small></span>
+                      <input value={pronouns} onChange={(event) => setPronouns(event.target.value)} placeholder=" he / him" />
+                    </label>
+                    <label className="field">
+                      <span>Date of birth <small>Optional</small></span>
+                      <input type="date" value={birthDate} onChange={(event) => setBirthDate(event.target.value)} />
+                    </label>
+                    <div className="field living-field">
+                      <span>Living status</span>
+                      <div className="living-toggle" role="group" aria-label="Living status">
+                        <button className={isLiving ? 'selected' : ''} type="button" onClick={() => setIsLiving(true)}>Living</button>
+                        <button className={!isLiving ? 'selected' : ''} type="button" onClick={() => setIsLiving(false)}>Passed away</button>
+                      </div>
+                    </div>
+                    {!isLiving && (
+                      <label className="field">
+                        <span>Date of passing <small>Optional</small></span>
+                        <input type="date" value={deathDate} onChange={(event) => setDeathDate(event.target.value)} />
+                      </label>
+                    )}
+                  </div>
+
+                  <div className="section-kicker relationship-kicker" id="relationship-section"><span>FAMILY CONNECTIONS</span><i /></div>
+                  {members.length === 0 ? (
+                    <div className="empty-connect"><UserRound size={18} /><span>Add your first person to start. </span></div>
+                  ) : (
+                    <div className="relationship-rows">
+                      {links.map((link, index) => (
+                        <div className="relationship-row" key={link.id}>
+                          <div className="relationship-row-top"><span>CONNECTION {String(index + 1).padStart(2, '0')}</span>
+                            {links.length > 1 && <button className="icon-button remove-link" type="button" onClick={() => removeLinkRow(link.id)} aria-label="Remove connection"><X size={15} /></button>}
+                          </div>
+                          <div className="form-grid relation-grid">
+                            <label className="field">
+                              <span>Person in your tree</span>
+                              <div className="select-wrap"><select value={link.personId} onChange={(event) => updateLink(link.id, 'personId', event.target.value)}>
+                                <option value="">Select a person</option>
+                                {members.map((member) => <option value={member.id} key={member.id}>{fullName(member)}</option>)}
+                              </select><ChevronDown size={15} /></div>
+                            </label>
+                            <label className="field">
+                              <span>New person&apos;s relationship</span>
+                              <div className="select-wrap"><select value={link.kind} onChange={(event) => updateLink(link.id, 'kind', event.target.value)}>
+                                <option value="">Select relationship</option>
+                                {relationKinds.map((kind) => <option value={kind} key={kind}>{kind}</option>)}
+                              </select><ChevronDown size={15} /></div>
+                            </label>
+                            <label className="field relation-type-field">
+                              <span>Connection type</span>
+                              <div className="select-wrap"><select value={link.type} onChange={(event) => updateLink(link.id, 'type', event.target.value)}>
+                                {relationTypes.map((type) => <option value={type} key={type}>{type}</option>)}
+                              </select><ChevronDown size={15} /></div>
+                            </label>
+                          </div>
+                          {link.kind && link.personId && (
+                            <div className="relationship-preview"><Link2 size={14} /> {firstName.trim() || 'This person'} is <b>{link.kind.toLowerCase()}</b> of {memberById.get(link.personId) ? fullName(memberById.get(link.personId)!) : 'the selected person'} <span>· {link.type}</span></div>
+                          )}
+                        </div>
+                      ))}
+                      <button type="button" className="add-connection" onClick={addLinkRow}><Plus size={15} /> Add another connection</button>
+                    </div>
+                  )}
+
+                  <div className="section-kicker notes-kicker"><span>NOTES</span><i /></div>
+                  <label className="field notes-field">
+                    <span><small>Optional</small></span>
+                    <textarea value={notes} onChange={(event) => setNotes(event.target.value)} placeholder="A memoir" rows={3} />
+                  </label>
+
+                  <div className="form-footer">
+                    <span><b>*</b> Required fields</span>
+                    <div className="footer-actions">
+                      <button type="button" className="button-quiet" onClick={resetForm}>Clear form</button>
+                      <button type="submit" className="button-primary">Add family member <ArrowRight size={16} /></button>
+                    </div>
+                  </div>
+                </form>
+              )}
             </section>
             <aside className="right-column">
               <section className="stats-card">
@@ -454,6 +622,18 @@ function InputUI() {
                 </div>
               )
             )}
+          </section>
+          <section className="tree-section">
+            <h2>Family Tree</h2>
+            <p style={{ fontSize: 13, color: '#64748b', marginBottom: 12 }}>
+              Drag from one persons handle to another to define a relationship between them.
+            </p>
+             <FamilyTreeView
+               members={members}
+               relationships={relationships}
+               treeId={treeId}
+               onConnectMembers={handleTreeConnect}
+              />
           </section>
         </main>
       </div>
