@@ -14,16 +14,32 @@ import {
   type Edge,
   type NodeProps,
   type Connection,
+  
 } from '@xyflow/react'
 import ELK from 'elkjs/lib/elk.bundled.js'
 import '@xyflow/react/dist/style.css'
 import type { Member, Relationship, RelationKind } from '../types/family'
-
+import { PersonSuggestionFeature } from '../personSuggestionUI'
+import type { Person } from '../personSuggestionUI/types/suggestionTypes'
+import '../personSuggestionUI/styles/suggestions.css'
 type FamilyNodeData = {
   member: Member
 }
 
 type FamilyNode = Node<FamilyNodeData, 'familyMember'>
+function toSuggestionPerson(member: Member): Person {
+  return {
+    id: member.id,
+    firstName: member.firstName,
+    lastName: member.lastName,
+    preferredName: member.preferredName,
+    pronouns: member.pronouns,
+    birthDate: member.birthDate,
+    deathDate: member.deathDate,
+    isLiving: member.isLiving,
+    notes: member.notes,
+  }
+}
 
 function FamilyMemberNode({ data }: NodeProps<FamilyNode>) {
   const { member } = data
@@ -79,7 +95,7 @@ function FamilyMemberNode({ data }: NodeProps<FamilyNode>) {
               overflow: 'hidden',
             }}
           >
-            {displayName}
+          {displayName}
           </div>
           <div style={{ fontSize: 11, color: '#64748b' }}>
             {member.pronouns ? `${member.pronouns} · ` : ''}
@@ -209,6 +225,7 @@ export function FamilyTreeView({
 }) {
   const [nodes, setNodes, onNodesChange] = useNodesState<FamilyNode>([])
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([])
+  const [selectedPerson, setSelectedPerson] = useState<Person | null>(null)
 
   const [treeLink, setTreeLink] = useState('')
   const [linkCopied, setLinkCopied] = useState(false)
@@ -309,21 +326,30 @@ export function FamilyTreeView({
       </div>
 
       <div style={{ width: '100%', height: 600, border: '1px solid #e2e8f0', borderRadius: 12, overflow: 'hidden' }}>
-        <ReactFlow
-        nodes={nodes}
-        edges={edges}
-        nodeTypes={nodeTypes}
-        onNodesChange={onNodesChange}
-        onEdgesChange={onEdgesChange}
-        onConnect={handleConnect}
-        connectionMode={ConnectionMode.Loose}
-        fitView
-        fitViewOptions={{ padding: 0.2 }}
-      >
+         <ReactFlow
+          nodes={nodes}
+          edges={edges}
+          nodeTypes={nodeTypes}
+          onNodesChange={onNodesChange}
+          onEdgesChange={onEdgesChange}
+          onConnect={handleConnect}
+          onNodeClick={(_, node) => {
+          setSelectedPerson(toSuggestionPerson(node.data.member))
+          }}
+          connectionMode={ConnectionMode.Loose}
+          fitView
+          fitViewOptions={{ padding: 0.2 }}
+          >
         <Background gap={16} color="#e2e8f0" />
         <Controls />
         <MiniMap zoomable pannable />
         </ReactFlow>
+        {selectedPerson && (
+        <PersonSuggestionFeature
+        person={selectedPerson}
+        onClose={() => setSelectedPerson(null)}
+      />
+)}
       </div>
     </div>
   )
